@@ -13,7 +13,6 @@ npm run preview   # serve o build de produção
 
 - **Não existe script de teste nem framework de testes instalado.** Não procure nem presuma testes; adicionar um exige instalar a dependência primeiro.
 - `build` roda `tsc -b` antes, então erros de tipo quebram o build independentemente do Vite.
-- Não há repositório git inicializado aqui.
 
 ## Restrições do TypeScript (elas quebram o build)
 
