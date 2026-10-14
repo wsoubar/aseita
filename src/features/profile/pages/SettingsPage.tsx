@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowUpRight } from 'lucide-react'
+import { ArrowUpRight, Monitor, Moon, Sun } from 'lucide-react'
 import { Button } from '../../../components/ui/button'
 import { Card } from '../../../components/ui/card'
 import { Field, Input } from '../../../components/ui/input'
@@ -9,11 +9,21 @@ import { updateProfile } from '../../auth/api'
 import { useAuth } from '../../auth/context'
 import { ProfileForm } from '../../profile/components/ProfileForm'
 import { supabase } from '../../../lib/supabase'
+import { cn } from '../../../lib/utils'
+import { useTheme } from '../../../lib/theme'
+import type { ThemePref } from '../../../lib/theme'
 import type { ProfileValues } from '../../../lib/schemas'
+
+const themeOptions: { value: ThemePref; label: string; icon: typeof Sun }[] = [
+  { value: 'light', label: 'Claro', icon: Sun },
+  { value: 'dark', label: 'Escuro', icon: Moon },
+  { value: 'system', label: 'Sistema', icon: Monitor },
+]
 
 export function SettingsPage() {
   const { user, profile, refetchProfile } = useAuth()
   const { show } = useToast()
+  const { pref, setPref } = useTheme()
   const [password, setPassword] = useState('')
   const [savingPassword, setSavingPassword] = useState(false)
 
@@ -71,6 +81,33 @@ export function SettingsPage() {
           }}
           onSubmit={handleSubmit}
         />
+      </Card>
+
+      <Card className="space-y-4 p-5">
+        <h2 className="font-display text-lg font-semibold">Aparência</h2>
+        <p className="text-sm text-muted">
+          Escolha o tema. &quot;Sistema&quot; acompanha a preferência do seu
+          dispositivo.
+        </p>
+        <div className="grid grid-cols-3 gap-2">
+          {themeOptions.map(({ value, label, icon: Icon }) => (
+            <button
+              key={value}
+              type="button"
+              onClick={() => setPref(value)}
+              aria-pressed={pref === value}
+              className={cn(
+                'flex flex-col items-center gap-1.5 rounded-lg border px-3 py-3 text-sm font-medium transition-colors',
+                pref === value
+                  ? 'border-accent bg-accent-soft text-accent'
+                  : 'border-line bg-surface text-muted hover:text-ink',
+              )}
+            >
+              <Icon className="size-5" />
+              {label}
+            </button>
+          ))}
+        </div>
       </Card>
 
       <Card className="space-y-4 p-5">

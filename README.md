@@ -92,3 +92,29 @@ curtir/comentar → ver o perfil de quem postou (clicando no nick) → ranking.
 sistema), `posts`, `likes`, `comments` e a view `character_rankings`
 (score = curtidas + comentários em posts vinculados ao personagem).
 Todas as tabelas têm **RLS**: leitura pública e escrita restrita ao dono.
+
+## Deploy (GitHub Pages)
+
+O deploy é automático via GitHub Actions em todo push para `main`
+([`.github/workflows/deploy.yml`](./.github/workflows/deploy.yml)). O workflow
+([`.github/workflows/ci.yml`](./.github/workflows/ci.yml)) roda `lint` + `build`
+em pushes e pull requests.
+
+Configuração inicial, uma vez:
+
+1. **Secrets** — em *Settings > Secrets and variables > Actions*, crie:
+   - `VITE_SUPABASE_URL`
+   - `VITE_SUPABASE_ANON_KEY`
+2. **Pages** — em *Settings > Pages*, defina **Source: GitHub Actions**.
+3. **Supabase** — adicione a URL publicada (ex.:
+   `https://<usuario>.github.io/<repo>/`) em *Authentication > URL Configuration
+   > Redirect URLs*.
+
+O `base` do Vite é ajustado automaticamente pelo workflow
+(`configure-pages` → `VITE_BASE`), então funciona tanto em repositório comum
+quanto em página de usuário/domínio customizado. Rotas do SPA são suportadas
+copiando `index.html` para `404.html`.
+
+> Para outros hosts (Vercel, Netlify), o build é o mesmo (`npm run build`,
+> saída em `dist/`); basta configurar as variáveis de ambiente no painel do host.
+

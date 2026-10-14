@@ -1,9 +1,22 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
-import { BookOpen, Home, LogOut, Settings, Trophy, User, Users } from 'lucide-react'
+import {
+  BookOpen,
+  Home,
+  LogOut,
+  Monitor,
+  Moon,
+  Settings,
+  Sun,
+  Trophy,
+  User,
+  Users,
+} from 'lucide-react'
 import { Avatar } from '../ui/avatar'
 import { useAuth } from '../../features/auth/context'
 import { auth } from '../../features/auth/api'
 import { cn } from '../../lib/utils'
+import { useTheme } from '../../lib/theme'
+import type { ThemePref } from '../../lib/theme'
 
 const links = [
   { to: '/', label: 'Feed', icon: Home, end: true },
@@ -11,9 +24,25 @@ const links = [
   { to: '/ranking', label: 'Ranking', icon: Trophy },
 ]
 
+const themeIcons = {
+  light: Sun,
+  dark: Moon,
+  system: Monitor,
+} as const
+
+const themeOrder: ThemePref[] = ['light', 'dark', 'system']
+
 export function AppLayout() {
   const { profile, user } = useAuth()
   const navigate = useNavigate()
+  const { pref, setPref } = useTheme()
+
+  const ThemeIcon = themeIcons[pref]
+
+  function cycleTheme() {
+    const next = themeOrder[(themeOrder.indexOf(pref) + 1) % themeOrder.length]
+    setPref(next)
+  }
 
   async function handleLogout() {
     await auth.signOut()
@@ -51,6 +80,15 @@ export function AppLayout() {
           </nav>
 
           <div className="flex items-center gap-1">
+            <button
+              type="button"
+              onClick={cycleTheme}
+              className="rounded-lg p-2 text-muted hover:bg-surface-2 hover:text-ink"
+              title={`Tema: ${pref === 'light' ? 'claro' : pref === 'dark' ? 'escuro' : 'sistema'}`}
+              aria-label="Alternar tema"
+            >
+              <ThemeIcon className="size-5" />
+            </button>
             {profile && (
               <NavLink
                 to={`/u/${profile.username}`}
