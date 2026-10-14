@@ -30,6 +30,8 @@ jobs:
       # Define o base path correto (raiz ou /<repo>) automaticamente.
       - uses: actions/configure-pages@v5
         id: pages
+        with:
+          enablement: true
 
       - name: Build
         run: npm run build
