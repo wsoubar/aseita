@@ -1,75 +1,94 @@
-# React + TypeScript + Vite
+# Grimório
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Rede social para jogadores de RPG: cadastre personagens de **diversos sistemas**,
+publique no feed, curta e comente, visite perfis de outros jogadores e acompanhe
+o **ranking de popularidade** dos personagens.
 
-Currently, two official plugins are available:
+## Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Vite + React 19 + TypeScript**
+- **Tailwind CSS v4** (tema escuro próprio, sem UI kit genérico)
+- **React Router** (SPA com rotas protegidas)
+- **TanStack Query** (cache/estado de servidor)
+- **React Hook Form + Zod** (formulários e validação)
+- **Supabase** (Auth + Postgres + Row Level Security)
 
-## React Compiler
+Não há upload de imagens: personagens e avatares usam apenas **URLs externas**.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Configuração
 
-## Expanding the ESLint configuration
+### 1. Dependências
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```sh
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
+### 2. Projeto Supabase
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+1. Crie um projeto em <https://supabase.com>.
+2. No **SQL Editor**, execute o conteúdo de
+   [`supabase/migrations/0001_init.sql`](./supabase/migrations/0001_init.sql).
+   Esse script cria tabelas, índices, triggers, policies de RLS, a view de
+   ranking e faz o seed dos sistemas.
+   _Alternativa com a CLI:_ `supabase link` e depois `supabase db push`.
+3. Em **Authentication > Providers**, habilite **Email** (e **Google**, se quiser
+   login social). Em **Authentication > URL Configuration**, adicione a URL do
+   app (ex.: `http://localhost:5173`) em *Redirect URLs*.
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### 3. Variáveis de ambiente
+
+Copie o exemplo e preencha com os dados de **Project Settings > API**:
+
+```sh
+cp .env.example .env
+```
 
 ```
+VITE_SUPABASE_URL=https://SEU-PROJETO.supabase.co
+VITE_SUPABASE_ANON_KEY=sua-anon-key-publica
+```
+
+> Use apenas a **anon key** (pública). Nunca coloque a `service_role` no cliente.
+
+## Comandos
+
+```sh
+npm run dev       # servidor de desenvolvimento (HMR)
+npm run build     # tsc -b && vite build
+npm run lint      # eslint
+npm run preview   # serve o build de produção
+```
+
+Não há testes automatizados neste projeto.
+
+## Estrutura
+
+```
+src/
+  components/
+    layout/        AppLayout (nav) e ProtectedRoute
+    ui/            primitivos (Button, Input, Card, Dialog, Toast, ...)
+  features/
+    auth/          AuthProvider, login/registro/onboarding
+    feed/          posts, likes, comentários
+    characters/    fichas (CRUD) e atributos dinâmicos
+    profile/       perfil público e configurações
+    ranking/       ranking de popularidade
+    systems/       catálogo de sistemas
+  lib/             supabase client, schemas (zod), utils
+  types.ts         tipos de domínio
+supabase/migrations/  schema SQL
+```
+
+## Fluxo do usuário
+
+Cadastro → **onboarding** (escolher nick e sistema preferido) → criar
+personagem → publicar no feed (opcionalmente vinculando um personagem) →
+curtir/comentar → ver o perfil de quem postou (clicando no nick) → ranking.
+
+## Modelo de dados
+
+`systems`, `profiles`, `characters` (com `data jsonb` para atributos livres por
+sistema), `posts`, `likes`, `comments` e a view `character_rankings`
+(score = curtidas + comentários em posts vinculados ao personagem).
+Todas as tabelas têm **RLS**: leitura pública e escrita restrita ao dono.

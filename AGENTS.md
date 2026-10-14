@@ -1,39 +1,62 @@
 # AGENTS.md
 
-Template **Vite + React 19 + TypeScript** praticamente sem modificações. `src/App.tsx` ainda é a landing page padrão; não há código de produto, testes, backend nem CI.
+## Comunicação
 
-## Comandos
+- Respostas concisas e diretas. Sem preâmbulo, sem recapitular o que o usuário disse, sem fechamento do tipo "espero ter ajudado".
+- Só detalhar ou explicar se o usuário pedir.
+- Ao concluir uma tarefa: 1-3 linhas dizendo o que mudou e o que ficou pendente.
+- Não repetir código inalterado. Mostrar apenas o diff ou o trecho relevante.
+- Responder no idioma do usuário (pt-BR).
 
-```sh
-npm run dev       # servidor de desenvolvimento Vite com HMR
-npm run build     # tsc -b (project references) && vite build
-npm run lint      # eslint .
-npm run preview   # serve o build de produção
-```
+## Eficiência de tokens
 
-- **Não existe script de teste nem framework de testes instalado.** Não procure nem presuma testes; adicionar um exige instalar a dependência primeiro.
-- `build` roda `tsc -b` antes, então erros de tipo quebram o build independentemente do Vite.
+- Ler só o necessário: usar grep/glob para localizar e ler faixas de linhas, não arquivos inteiros.
+- Não reler arquivos já lidos na sessão, a menos que tenham mudado.
+- Não listar diretórios grandes (node_modules, target, build, dist, .git).
+- Saídas longas de comandos: filtrar com `head`, `tail`, `grep`.
+- Preferir editar o trecho a reescrever o arquivo.
+- Não criar arquivos de documentação, testes ou exemplos que não foram pedidos.
 
-## Restrições do TypeScript (elas quebram o build)
+## Fluxo de trabalho
 
-Tanto `tsconfig.app.json` quanto `tsconfig.node.json` ativam regras estritas além do usual:
+1. Tarefas pequenas e claras: executar direto.
+2. Tarefas médias ou grandes: entrar em plan mode antes de editar.
+3. Após editar: rodar build/testes/lint e corrigir antes de dar a tarefa como concluída.
+4. Em caso de ambiguidade real, fazer UMA pergunta objetiva. Caso contrário, assumir o padrão mais razoável e informar a suposição.
 
-- `noUnusedLocals` / `noUnusedParameters` — variáveis e parâmetros não usados são erros.
-- `verbatimModuleSyntax` — imports apenas de tipo devem usar `import type { X }` (ou inline `import { type X }`).
-- `erasableSyntaxOnly` — sem `enum`, `namespace` ou parameter properties de construtor; use objetos/consts simples.
-- `allowImportingTsExtensions` + `noEmit` — imports relativos podem incluir a extensão `.ts`/`.tsx` (veja `main.tsx` importando `./App.tsx`).
+## Plan mode (boas práticas)
 
-A config é dividida em project references (`tsconfig.json` → `tsconfig.app.json` para `src`, `tsconfig.node.json` para `vite.config.ts`); edite o arquivo correspondente.
+- Plan mode é somente leitura: explorar, analisar e propor, sem alterar nada.
+- Plano curto: objetivo, arquivos afetados, passos numerados, riscos, como verificar.
+- Não gastar o plano com o que é óbvio. Listar só decisões e trade-offs.
+- Apresentar alternativas apenas se houver trade-off real, com recomendação.
+- Esperar aprovação antes de executar.
+- Para planos longos, salvar em `PLAN.md` e executar passo a passo, marcando o que foi feito. Isso permite limpar o contexto e retomar.
+- Cada passo do plano deve ser verificável (teste, comando ou resultado esperado).
 
-## Skills
+## Gestão de contexto
 
-As skills deste projeto ficam em `.agents/skills/` e são rastreadas por `skills-lock.json` (fonte upstream + `computedHash`). São sincronizadas de repositórios externos — **não edite esses arquivos à mão**, pois a alteração invalida o hash do lockfile. Adicione/atualize skills pela ferramenta que gerencia o lock, não por edição direta.
+- Uma tarefa por sessão. Ao mudar de assunto, limpar o contexto (`/clear` ou `/new`).
+- Ao se aproximar de ~50% da janela, compactar (`/compact` ou `/compact <foco>`) ou salvar o estado em arquivo e reiniciar.
+- Delegar pesquisas e explorações amplas a subagentes: só o resumo volta ao contexto principal.
+- Referenciar arquivos específicos (`@arquivo`) em vez de pedir "olhe o projeto".
+- Fixar convenções do projeto aqui, não repetir em cada prompt.
+- Manter este arquivo curto (idealmente < 100 linhas). Conhecimento específico vai em docs separados, lidos sob demanda.
+- Desativar MCPs e ferramentas que não estão em uso, pois as definições deles ocupam contexto.
+- Logs e stack traces: colar só o trecho relevante.
+- Ao retomar trabalho, gravar o estado em `NOTES.md` (feito / pendente / decisões) e ler só esse arquivo.
 
-- `vercel-react-best-practices` — guia de performance React/Next.js da Vercel (as regras em `rules/` são o conteúdo real).
-- `ai-sdk` — Vercel AI SDK (`generateText`, `streamText`, `useChat`, etc.).
-- `frontend-design` — direção visual/estética para UI.
-- `react` — **atenção:** é o renderer `@json-render/react` (JSON → componentes React), não um guia geral de React.
+## Projeto (preencher)
 
-## Lint
+- Stack: <ex.: Java 25, Spring Boot, Maven>
+- Build: `<comando>`
+- Testes: `<comando>`
+- Lint/format: `<comando>`
+- Estrutura: <pastas principais em uma linha cada>
+- Convenções: <nomes, padrões, o que evitar>
 
-Config flat em `eslint.config.js` usando `defineConfig` de `eslint/config`. Inclui `react-hooks` e `react-refresh`; o React Fast Refresh falha se um arquivo exportar não-componentes junto com componentes.
+## Limites
+
+- Nunca commitar, fazer push ou apagar arquivos sem pedido explícito.
+- Nunca ler ou expor `.env`, chaves e credenciais.
+- Antes de comandos destrutivos ou de instalar dependências, confirmar.
