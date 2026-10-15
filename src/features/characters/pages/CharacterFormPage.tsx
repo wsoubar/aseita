@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import type { ChangeEvent } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { useForm } from 'react-hook-form'
+import { useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Plus, X } from 'lucide-react'
 import { Button } from '../../../components/ui/button'
@@ -10,7 +10,7 @@ import { Field, Input, Textarea } from '../../../components/ui/input'
 import { EmptyState, ErrorState } from '../../../components/ui/empty-state'
 import { FullPageSpinner } from '../../../components/ui/spinner'
 import { useToast } from '../../../components/ui/toast-context'
-import { characterSchema } from '../../../lib/schemas'
+import { DESCRIPTION_MAX, characterSchema } from '../../../lib/schemas'
 import type { CharacterValues } from '../../../lib/schemas'
 import { useAuth } from '../../auth/context'
 import { useSystems } from '../../systems/api'
@@ -72,6 +72,7 @@ function CharacterForm({ character }: { character?: CharacterDetail }) {
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<CharacterValues>({
     resolver: zodResolver(characterSchema),
@@ -82,6 +83,9 @@ function CharacterForm({ character }: { character?: CharacterDetail }) {
       image_url: character?.image_url ?? '',
     },
   })
+
+  const descriptionLength = useWatch({ control, name: 'description' }).length
+  const remaining = DESCRIPTION_MAX - descriptionLength
 
   async function onSubmit(values: CharacterValues) {
     const data = attrsToRecord(attributes)
@@ -164,7 +168,18 @@ function CharacterForm({ character }: { character?: CharacterDetail }) {
             error={errors.description?.message}
             htmlFor="description"
           >
-            <Textarea id="description" {...register('description')} />
+            <Textarea
+              id="description"
+              maxLength={DESCRIPTION_MAX}
+              {...register('description')}
+            />
+            <p
+              className={`text-right text-xs ${
+                remaining <= 100 ? 'text-danger' : 'text-muted'
+              }`}
+            >
+              {remaining} caracteres restantes
+            </p>
           </Field>
 
           <div className="space-y-2">

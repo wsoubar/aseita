@@ -3,6 +3,8 @@ import { isHttpUrl } from './utils'
 
 const urlOrEmpty = (value: string) => value === '' || isHttpUrl(value)
 
+export const DESCRIPTION_MAX = 4000
+
 export const usernameSchema = z
   .string()
   .trim()
@@ -30,7 +32,10 @@ export const profileSchema = z.object({
 export const characterSchema = z.object({
   name: z.string().trim().min(2, 'Mínimo de 2 caracteres').max(80),
   system_id: z.string().min(1, 'Selecione um sistema'),
-  description: z.string().trim().max(2000, 'Máximo de 2000 caracteres'),
+  description: z
+    .string()
+    .trim()
+    .max(DESCRIPTION_MAX, `Máximo de ${DESCRIPTION_MAX} caracteres`),
   image_url: z
     .string()
     .trim()
