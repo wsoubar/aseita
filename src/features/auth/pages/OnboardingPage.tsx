@@ -18,7 +18,7 @@ export function OnboardingPage() {
     try {
       await updateProfile(user!.id, values, true)
       refetchProfile()
-      show('Perfil pronto! Bem-vindo ao Grimório.', 'success')
+      show('Perfil pronto! Bem-vindo à Seita.', 'success')
       navigate('/')
     } catch {
       show('Não foi possível salvar. O nick pode estar em uso.', 'error')

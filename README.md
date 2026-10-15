@@ -1,4 +1,4 @@
-# Grimório
+# A Seita
 
 Rede social para jogadores de RPG: cadastre personagens de **diversos sistemas**,
 publique no feed, curta e comente, visite perfis de outros jogadores e acompanhe

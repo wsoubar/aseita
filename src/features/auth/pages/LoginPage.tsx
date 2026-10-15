@@ -50,7 +50,7 @@ export function LoginPage() {
 
   return (
     <AuthShell
-      title="Grimório"
+      title="A Seita"
       subtitle="Entre para gerenciar seus personagens e participar da comunidade."
     >
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">

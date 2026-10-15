@@ -1,4 +1,4 @@
--- Grimório — schema inicial
+-- A Seita — schema inicial
 -- Aplique no Supabase (SQL Editor) ou via `supabase db push`.
 
 -- =========================================================

@@ -55,7 +55,7 @@ export function AppLayout() {
         <div className="mx-auto flex h-14 max-w-3xl items-center justify-between gap-4 px-4">
           <NavLink to="/" className="flex items-center gap-2">
             <BookOpen className="size-5 text-accent" />
-            <span className="font-display text-lg font-bold">Grimório</span>
+            <span className="font-display text-lg font-bold">A Seita</span>
           </NavLink>
 
           <nav className="hidden items-center gap-1 sm:flex">
