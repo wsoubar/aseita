@@ -33,18 +33,20 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   return (
     <ToastContext.Provider value={value}>
       {children}
-      <div className="pointer-events-none fixed inset-x-0 bottom-20 z-[60] flex flex-col items-center gap-2 px-4 sm:bottom-6">
+      <div className="pointer-events-none fixed inset-x-0 bottom-[calc(5rem+env(safe-area-inset-bottom))] z-[60] flex flex-col items-center gap-2 px-4 sm:bottom-6">
         {toasts.map((t) => {
           const Icon = icons[t.kind]
           return (
             <div
               key={t.id}
-              role="status"
+              role={t.kind === 'error' ? 'alert' : 'status'}
               className={cn(
                 'pointer-events-auto flex w-full max-w-sm items-center gap-2 rounded-lg border px-3 py-2 text-sm shadow-lg',
                 t.kind === 'error'
-                  ? 'border-danger/40 bg-surface text-danger'
-                  : 'border-line bg-surface text-ink',
+                  ? 'border-danger/30 bg-danger/5 text-danger'
+                  : t.kind === 'success'
+                    ? 'border-success/30 bg-surface text-success'
+                    : 'border-line bg-surface text-ink',
               )}
             >
               <Icon className="size-4 shrink-0" />

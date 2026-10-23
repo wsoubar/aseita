@@ -35,16 +35,16 @@ export function ProfilePage() {
 
   return (
     <div className="space-y-6">
-      <section className="rounded-[var(--radius-card)] border border-line bg-surface p-5">
-        <div className="flex items-start gap-4">
+      <section className="rounded-[var(--radius-card)] border border-line bg-surface p-5 shadow-sm shadow-black/[0.04] sm:p-7">
+        <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center">
           <Avatar
             src={profile.avatar_url}
             name={profile.display_name}
-            size={64}
+            size={80}
           />
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
-              <h1 className="truncate font-display text-xl font-bold">
+              <h1 className="truncate font-display text-2xl font-semibold tracking-tight sm:text-3xl">
                 {profile.display_name}
               </h1>
               {isMe && (
@@ -57,7 +57,7 @@ export function ProfilePage() {
                 </Link>
               )}
             </div>
-            <p className="text-sm text-muted">@{profile.username}</p>
+            <p className="mt-1 text-sm text-muted">@{profile.username}</p>
             {profile.preferred_system && (
               <Badge className="mt-2">
                 Prefere {profile.preferred_system.name}
@@ -71,7 +71,7 @@ export function ProfilePage() {
       </section>
 
       <section className="space-y-3">
-        <h2 className="font-display text-lg font-semibold">
+        <h2 className="font-display text-lg font-semibold tracking-tight">
           Personagens ({characters.data?.length ?? 0})
         </h2>
         {characters.data && characters.data.length === 0 && (
@@ -88,17 +88,17 @@ export function ProfilePage() {
             <Link
               key={c.id}
               to={`/characters/${c.id}`}
-              className="overflow-hidden rounded-[var(--radius-card)] border border-line bg-surface hover:border-muted"
+              className="group overflow-hidden rounded-[var(--radius-card)] border border-line bg-surface transition-all hover:-translate-y-0.5 hover:border-muted hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
             >
               {c.image_url ? (
                 <img
                   src={c.image_url}
                   alt={c.name}
                   loading="lazy"
-                  className="h-28 w-full object-cover"
+                  className="h-32 w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
                 />
               ) : (
-                <div className="flex h-28 w-full items-center justify-center bg-accent-soft text-accent">
+                <div className="flex h-32 w-full items-center justify-center bg-surface-2 text-sm font-medium tracking-wide text-muted">
                   RPG
                 </div>
               )}
@@ -112,7 +112,7 @@ export function ProfilePage() {
       </section>
 
       <section className="space-y-3">
-        <h2 className="font-display text-lg font-semibold">Posts</h2>
+        <h2 className="font-display text-lg font-semibold tracking-tight">Posts</h2>
         {posts.data && posts.data.length === 0 && (
           <EmptyState
             title="Sem posts"

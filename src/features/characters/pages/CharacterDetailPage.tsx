@@ -55,15 +55,15 @@ export function CharacterDetailPage() {
         Voltar
       </button>
 
-      <div className="overflow-hidden rounded-[var(--radius-card)] border border-line bg-surface">
+      <div className="overflow-hidden rounded-[var(--radius-card)] border border-line bg-surface shadow-sm shadow-black/[0.04]">
         {c.image_url ? (
           <img
             src={c.image_url}
             alt={c.name}
-            className="h-64 w-full object-cover"
+            className="h-56 w-full object-cover sm:h-80"
           />
         ) : (
-          <div className="flex h-40 w-full items-center justify-center bg-accent-soft font-display text-2xl text-accent">
+          <div className="flex h-40 w-full items-center justify-center bg-surface-2 font-display text-2xl font-medium tracking-wide text-muted">
             RPG
           </div>
         )}
@@ -71,7 +71,7 @@ export function CharacterDetailPage() {
         <div className="space-y-4 p-5">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <h1 className="font-display text-xl font-bold">{c.name}</h1>
+              <h1 className="font-display text-2xl font-semibold tracking-tight sm:text-3xl">{c.name}</h1>
               <p className="text-sm text-muted">{c.system.name}</p>
             </div>
             <span className="flex items-center gap-1 text-sm text-accent">
@@ -99,7 +99,7 @@ export function CharacterDetailPage() {
           {attributes.length > 0 && (
             <dl className="grid grid-cols-2 gap-2 border-t border-line pt-4">
               {attributes.map(([key, value]) => (
-                <div key={key} className="rounded-lg bg-surface-2 p-2.5">
+                <div key={key} className="rounded-xl border border-line/70 bg-surface-2/70 p-3">
                   <dt className="text-xs text-muted">{key}</dt>
                   <dd className="text-sm font-medium">{value}</dd>
                 </div>

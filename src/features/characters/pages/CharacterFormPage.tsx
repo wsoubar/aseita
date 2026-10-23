@@ -106,17 +106,20 @@ function CharacterForm({ character }: { character?: CharacterDetail }) {
 
   return (
     <div className="space-y-5">
-      <h1 className="font-display text-xl font-bold">
-        {isEdit ? 'Editar personagem' : 'Novo personagem'}
-      </h1>
+      <div>
+        <h1 className="page-title">
+          {isEdit ? 'Editar personagem' : 'Novo personagem'}
+        </h1>
+        <p className="page-description">Monte uma ficha para compartilhar com a comunidade.</p>
+      </div>
 
-      <Card className="p-5">
+      <Card className="p-5 sm:p-7">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           {preview && (
             <img
               src={preview}
               alt="Prévia"
-              className="h-40 w-full rounded-lg border border-line object-cover"
+              className="h-48 w-full rounded-xl border border-line object-cover sm:h-64"
             />
           )}
 
@@ -135,7 +138,7 @@ function CharacterForm({ character }: { character?: CharacterDetail }) {
           >
             <select
               id="system_id"
-              className="h-10 w-full rounded-lg border border-line bg-surface px-3 text-sm text-ink focus:border-accent focus:outline-none"
+              className="form-control"
               {...register('system_id')}
             >
               <option value="">Selecione...</option>

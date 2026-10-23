@@ -8,13 +8,13 @@ import { Eye, EyeOff } from 'lucide-react'
 import { cn } from '../../lib/utils'
 
 const fieldBase =
-  'w-full rounded-lg border border-line bg-surface px-3 py-2 text-sm text-ink placeholder:text-muted/60 transition-colors focus:border-accent focus:outline-none disabled:opacity-50'
+  'w-full rounded-xl border border-line bg-surface px-3 py-2 text-sm text-ink placeholder:text-muted/70 outline-none transition-colors hover:border-muted/70 focus:border-accent focus:ring-4 focus:ring-accent/10 disabled:cursor-not-allowed disabled:opacity-60'
 
 export function Input({
   className,
   ...props
 }: InputHTMLAttributes<HTMLInputElement>) {
-  return <input className={cn(fieldBase, 'h-10', className)} {...props} />
+  return <input className={cn(fieldBase, 'h-11', className)} {...props} />
 }
 
 export function PasswordInput({
@@ -43,7 +43,7 @@ export function Textarea({
   className,
   ...props
 }: TextareaHTMLAttributes<HTMLTextAreaElement>) {
-  return <textarea className={cn(fieldBase, 'min-h-24', className)} {...props} />
+  return <textarea className={cn(fieldBase, 'min-h-28 resize-y', className)} {...props} />
 }
 
 export function Field({
@@ -60,8 +60,8 @@ export function Field({
   children: ReactNode
 }) {
   return (
-    <div className="space-y-1.5">
-      <label htmlFor={htmlFor} className="block text-sm font-medium text-ink">
+    <div className="space-y-2">
+      <label htmlFor={htmlFor} className="block text-[0.82rem] font-medium text-ink">
         {label}
       </label>
       {children}

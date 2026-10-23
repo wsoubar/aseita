@@ -33,7 +33,7 @@ const themeIcons = {
 const themeOrder: ThemePref[] = ['light', 'dark', 'system']
 
 export function AppLayout() {
-  const { profile, user } = useAuth()
+  const { profile } = useAuth()
   const navigate = useNavigate()
   const { pref, setPref } = useTheme()
 
@@ -50,15 +50,17 @@ export function AppLayout() {
   }
 
   return (
-    <div className="min-h-dvh pb-20 sm:pb-0">
-      <header className="sticky top-0 z-40 border-b border-line bg-canvas/80 backdrop-blur">
-        <div className="mx-auto flex h-14 max-w-3xl items-center justify-between gap-4 px-4">
-          <NavLink to="/" className="flex items-center gap-2">
-            <BookOpen className="size-5 text-accent" />
-            <span className="font-display text-lg font-bold">A Seita</span>
+    <div className="min-h-dvh pb-[calc(5rem+env(safe-area-inset-bottom))] sm:pb-0">
+      <header className="sticky top-0 z-40 border-b border-line/80 bg-canvas/90 backdrop-blur-xl">
+        <div className="mx-auto flex h-16 max-w-5xl items-center justify-between gap-4 px-4 sm:px-6">
+          <NavLink to="/" className="flex shrink-0 items-center gap-2.5 rounded-lg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent">
+            <span className="flex size-9 items-center justify-center rounded-xl border border-line bg-surface-2 text-accent">
+              <BookOpen className="size-[18px]" />
+            </span>
+            <span className="font-display text-[1.05rem] font-semibold tracking-tight">A Seita</span>
           </NavLink>
 
-          <nav className="hidden items-center gap-1 sm:flex">
+          <nav aria-label="Navegação principal" className="hidden items-center gap-1 sm:flex">
             {links.map(({ to, label, icon: Icon, end }) => (
               <NavLink
                 key={to}
@@ -66,10 +68,10 @@ export function AppLayout() {
                 end={end}
                 className={({ isActive }) =>
                   cn(
-                    'flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                    'flex items-center gap-2 rounded-xl px-3.5 py-2.5 text-sm font-medium transition-colors',
                     isActive
-                      ? 'bg-surface-2 text-ink'
-                      : 'text-muted hover:text-ink',
+                      ? 'bg-accent-soft text-accent'
+                      : 'text-muted hover:bg-surface-2/70 hover:text-ink',
                   )
                 }
               >
@@ -79,11 +81,11 @@ export function AppLayout() {
             ))}
           </nav>
 
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 sm:gap-1.5">
             <button
               type="button"
               onClick={cycleTheme}
-              className="rounded-lg p-2 text-muted hover:bg-surface-2 hover:text-ink"
+              className="flex size-10 items-center justify-center rounded-xl text-muted transition-colors hover:bg-surface-2 hover:text-ink focus-visible:outline-2 focus-visible:outline-accent"
               title={`Tema: ${pref === 'light' ? 'claro' : pref === 'dark' ? 'escuro' : 'sistema'}`}
               aria-label="Alternar tema"
             >
@@ -92,7 +94,7 @@ export function AppLayout() {
             {profile && (
               <NavLink
                 to={`/u/${profile.username}`}
-                className="flex items-center gap-2 rounded-lg px-2 py-1 hover:bg-surface-2"
+                className="flex items-center gap-2 rounded-xl p-1.5 hover:bg-surface-2 focus-visible:outline-2 focus-visible:outline-accent"
                 title="Meu perfil"
               >
                 <Avatar
@@ -104,7 +106,7 @@ export function AppLayout() {
             )}
             <NavLink
               to="/settings"
-              className="rounded-lg p-2 text-muted hover:bg-surface-2 hover:text-ink"
+              className="flex size-10 items-center justify-center rounded-xl text-muted transition-colors hover:bg-surface-2 hover:text-ink focus-visible:outline-2 focus-visible:outline-accent"
               title="Configurações"
             >
               <Settings className="size-5" />
@@ -112,22 +114,21 @@ export function AppLayout() {
             <button
               type="button"
               onClick={handleLogout}
-              className="rounded-lg p-2 text-muted hover:bg-surface-2 hover:text-ink"
+              className="flex size-10 items-center justify-center rounded-xl text-muted transition-colors hover:bg-surface-2 hover:text-ink focus-visible:outline-2 focus-visible:outline-accent"
               title="Sair"
             >
               <LogOut className="size-5" />
             </button>
           </div>
         </div>
-        {!user && null}
       </header>
 
-      <main className="mx-auto max-w-3xl px-4 py-6">
+      <main className="mx-auto max-w-3xl px-4 py-6 sm:px-6 sm:py-9">
         <Outlet />
       </main>
 
-      <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-canvas/95 backdrop-blur sm:hidden">
-        <div className="mx-auto flex max-w-3xl items-center justify-around">
+      <nav aria-label="Navegação inferior" className="fixed inset-x-0 bottom-0 z-40 border-t border-line/80 bg-canvas/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl sm:hidden">
+        <div className="mx-auto flex max-w-lg items-center justify-around px-2 pt-1.5">
           {links.map(({ to, label, icon: Icon, end }) => (
             <NavLink
               key={to}
@@ -135,7 +136,7 @@ export function AppLayout() {
               end={end}
               className={({ isActive }) =>
                 cn(
-                  'flex flex-1 flex-col items-center gap-1 py-2.5 text-xs font-medium',
+                  'flex flex-1 flex-col items-center gap-1 rounded-xl py-2 text-[0.68rem] font-medium transition-colors',
                   isActive ? 'text-accent' : 'text-muted',
                 )
               }
@@ -148,7 +149,7 @@ export function AppLayout() {
             to={profile ? `/u/${profile.username}` : '/settings'}
             className={({ isActive }) =>
               cn(
-                'flex flex-1 flex-col items-center gap-1 py-2.5 text-xs font-medium',
+                'flex flex-1 flex-col items-center gap-1 rounded-xl py-2 text-[0.68rem] font-medium transition-colors',
                 isActive ? 'text-accent' : 'text-muted',
               )
             }

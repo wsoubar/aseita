@@ -29,7 +29,7 @@ export function Avatar({
     <span
       aria-hidden="true"
       className={cn(
-        'flex shrink-0 items-center justify-center rounded-full bg-accent-soft font-medium text-accent',
+        'flex shrink-0 items-center justify-center rounded-full border border-accent/10 bg-accent-soft font-semibold text-accent',
         className,
       )}
       style={{ ...style, fontSize: size * 0.4 }}

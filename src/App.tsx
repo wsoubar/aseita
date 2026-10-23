@@ -26,9 +26,11 @@ const queryClient = new QueryClient({
 function ConfigNotice() {
   return (
     <div className="flex min-h-dvh items-center justify-center px-4">
-      <div className="w-full max-w-md space-y-3 rounded-[var(--radius-card)] border border-line bg-surface p-6 text-center">
-        <BookOpen className="mx-auto size-8 text-accent" />
-        <h1 className="font-display text-xl font-bold">
+      <div className="w-full max-w-md space-y-4 rounded-[var(--radius-card)] border border-line bg-surface p-7 text-center shadow-xl shadow-black/10">
+        <span className="mx-auto flex size-12 items-center justify-center rounded-2xl bg-accent-soft text-accent">
+          <BookOpen className="size-6" />
+        </span>
+        <h1 className="font-display text-2xl font-semibold tracking-tight">
           Configure o Supabase
         </h1>
         <p className="text-sm text-muted">

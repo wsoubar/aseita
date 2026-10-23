@@ -34,7 +34,7 @@ export function Dialog({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 p-0 sm:items-center sm:p-4"
+      className="fixed inset-0 z-50 flex items-end justify-center bg-black/65 p-0 backdrop-blur-sm sm:items-center sm:p-4"
       onClick={onClose}
     >
       <div
@@ -42,7 +42,7 @@ export function Dialog({
         aria-modal="true"
         aria-label={title}
         className={cn(
-          'w-full max-w-lg rounded-t-[var(--radius-card)] border border-line bg-surface p-5 shadow-xl sm:rounded-[var(--radius-card)]',
+          'max-h-[90dvh] w-full max-w-lg overflow-y-auto rounded-t-[var(--radius-card)] border border-line bg-surface p-5 shadow-2xl sm:rounded-[var(--radius-card)] sm:p-6',
           className,
         )}
         onClick={(e) => e.stopPropagation()}

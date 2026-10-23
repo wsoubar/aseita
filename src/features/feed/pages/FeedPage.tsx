@@ -28,9 +28,12 @@ export function FeedPage() {
   const posts = feed.data?.pages.flat() ?? []
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between gap-3">
-        <h1 className="font-display text-xl font-bold">Feed</h1>
+    <div className="space-y-5">
+      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+        <div>
+          <h1 className="page-title">Feed</h1>
+          <p className="page-description">Ideias, histórias e novidades da comunidade.</p>
+        </div>
         <PostComposer />
       </div>
 

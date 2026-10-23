@@ -16,11 +16,11 @@ export function PostCard({ post }: { post: FeedPost }) {
   const isOwner = user?.id === post.author.id
 
   return (
-    <article className="rounded-[var(--radius-card)] border border-line bg-surface p-4">
+    <article className="rounded-[var(--radius-card)] border border-line bg-surface p-4 shadow-sm shadow-black/[0.04] sm:p-5">
       <header className="flex items-center justify-between gap-3">
         <Link
           to={`/u/${post.author.username}`}
-          className="flex min-w-0 items-center gap-3"
+          className="flex min-w-0 items-center gap-3 rounded-lg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
         >
           <Avatar
             src={post.author.avatar_url}
@@ -28,7 +28,7 @@ export function PostCard({ post }: { post: FeedPost }) {
             size={40}
           />
           <div className="min-w-0">
-            <p className="truncate text-sm font-semibold hover:text-accent">
+          <p className="truncate text-sm font-semibold tracking-tight hover:text-accent">
               {post.author.display_name}
             </p>
             <p className="truncate text-xs text-muted">
@@ -57,7 +57,7 @@ export function PostCard({ post }: { post: FeedPost }) {
       {post.character && (
         <Link
           to={`/characters/${post.character.id}`}
-          className="mt-3 flex items-center gap-3 rounded-lg border border-line bg-surface-2 p-2.5 hover:border-muted"
+          className="mt-4 flex items-center gap-3 rounded-xl border border-line bg-surface-2 p-2.5 transition-colors hover:border-muted"
         >
           {post.character.image_url ? (
             <img
@@ -67,7 +67,7 @@ export function PostCard({ post }: { post: FeedPost }) {
               className="size-11 shrink-0 rounded-md object-cover"
             />
           ) : (
-            <div className="flex size-11 shrink-0 items-center justify-center rounded-md bg-accent-soft text-xs text-accent">
+            <div className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-surface text-xs font-medium tracking-wide text-muted">
               RPG
             </div>
           )}
@@ -88,7 +88,7 @@ export function PostCard({ post }: { post: FeedPost }) {
             toggleLike.mutate({ postId: post.id, liked: post.liked })
           }
           className={cn(
-            'flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-sm transition-colors',
+            'flex min-h-10 items-center gap-1.5 rounded-xl px-3 text-sm transition-colors focus-visible:outline-2 focus-visible:outline-accent',
             post.liked
               ? 'text-accent'
               : 'text-muted hover:bg-surface-2 hover:text-ink',

@@ -47,7 +47,7 @@ export function ProfileForm({
 
   return (
     <form onSubmit={handleSubmit(submit)} className="space-y-4">
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-4 rounded-xl border border-line bg-surface-2/50 p-3">
         <Avatar src={avatarUrl || null} name={displayName || '?'} size={56} />
         <p className="text-xs text-muted">
           Avatar via URL externa — cole um link de imagem abaixo.
@@ -91,7 +91,7 @@ export function ProfileForm({
       >
         <select
           id="preferred_system_id"
-          className="h-10 w-full rounded-lg border border-line bg-surface px-3 text-sm text-ink focus:border-accent focus:outline-none"
+          className="form-control"
           {...register('preferred_system_id')}
         >
           <option value="">Nenhum</option>

@@ -7,8 +7,6 @@ import { useSystems } from '../../systems/api'
 import { useRanking } from '../api'
 import { cn } from '../../../lib/utils'
 
-const medals = ['🥇', '🥈', '🥉']
-
 export function RankingPage() {
   const [systemId, setSystemId] = useState('')
   const systems = useSystems()
@@ -16,18 +14,18 @@ export function RankingPage() {
 
   return (
     <div className="space-y-5">
-      <div className="flex items-center justify-between gap-3">
-        <h1 className="flex items-center gap-2 font-display text-xl font-bold">
-          <Trophy className="size-5 text-accent" />
-          Ranking de popularidade
+      <div>
+        <h1 className="page-title flex items-center gap-2">
+          <Trophy className="size-5 text-accent" /> Ranking
         </h1>
+        <p className="page-description">Os personagens mais queridos da comunidade.</p>
       </div>
 
       <select
         value={systemId}
         onChange={(e) => setSystemId(e.target.value)}
         aria-label="Filtrar ranking por sistema"
-        className="h-10 w-full rounded-lg border border-line bg-surface px-3 text-sm text-ink focus:border-accent focus:outline-none sm:w-64"
+        className="form-control sm:w-64"
       >
         <option value="">Todos os sistemas</option>
         {systems.data?.map((s) => (
@@ -60,7 +58,7 @@ export function RankingPage() {
           <li key={row.id}>
             <Link
               to={`/characters/${row.id}`}
-              className="flex items-center gap-3 rounded-xl border border-line bg-surface p-3 transition-colors hover:border-muted"
+              className="flex items-center gap-3 rounded-2xl border border-line bg-surface p-3.5 transition-all hover:border-muted hover:bg-surface/80 hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
             >
               <span
                 className={cn(
@@ -68,7 +66,7 @@ export function RankingPage() {
                   row.rank <= 3 ? 'bg-accent-soft text-accent' : 'bg-surface-2 text-muted',
                 )}
               >
-                {medals[row.rank - 1] ?? row.rank}
+                {String(row.rank).padStart(2, '0')}
               </span>
               {row.image_url ? (
                 <img
@@ -78,7 +76,7 @@ export function RankingPage() {
                   className="size-10 shrink-0 rounded-md object-cover"
                 />
               ) : (
-                <div className="flex size-10 shrink-0 items-center justify-center rounded-md bg-accent-soft text-xs text-accent">
+                <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-surface-2 text-xs font-medium tracking-wide text-muted">
                   RPG
                 </div>
               )}

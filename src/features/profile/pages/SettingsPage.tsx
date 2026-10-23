@@ -55,9 +55,12 @@ export function SettingsPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between gap-3">
-        <h1 className="font-display text-xl font-bold">Configurações</h1>
+    <div className="space-y-7">
+      <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-end">
+        <div>
+          <h1 className="page-title">Configurações</h1>
+          <p className="page-description">Personalize seu perfil e sua experiência.</p>
+        </div>
         <Link
           to={`/u/${profile.username}`}
           className="flex items-center gap-1 text-sm text-muted hover:text-accent"
@@ -67,7 +70,7 @@ export function SettingsPage() {
         </Link>
       </div>
 
-      <Card className="p-5">
+      <Card className="p-5 sm:p-7">
         <h2 className="mb-4 font-display text-lg font-semibold">Perfil</h2>
         <ProfileForm
           userId={user.id}
@@ -83,7 +86,7 @@ export function SettingsPage() {
         />
       </Card>
 
-      <Card className="space-y-4 p-5">
+      <Card className="space-y-4 p-5 sm:p-7">
         <h2 className="font-display text-lg font-semibold">Aparência</h2>
         <p className="text-sm text-muted">
           Escolha o tema. &quot;Sistema&quot; acompanha a preferência do seu
@@ -97,10 +100,10 @@ export function SettingsPage() {
               onClick={() => setPref(value)}
               aria-pressed={pref === value}
               className={cn(
-                'flex flex-col items-center gap-1.5 rounded-lg border px-3 py-3 text-sm font-medium transition-colors',
+                'flex flex-col items-center gap-2 rounded-xl border px-3 py-4 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent',
                 pref === value
                   ? 'border-accent bg-accent-soft text-accent'
-                  : 'border-line bg-surface text-muted hover:text-ink',
+                  : 'border-line bg-surface text-muted hover:border-muted hover:bg-surface-2 hover:text-ink',
               )}
             >
               <Icon className="size-5" />
@@ -110,7 +113,7 @@ export function SettingsPage() {
         </div>
       </Card>
 
-      <Card className="space-y-4 p-5">
+      <Card className="space-y-4 p-5 sm:p-7">
         <h2 className="font-display text-lg font-semibold">Conta</h2>
         <Field label="E-mail" htmlFor="account-email">
           <Input id="account-email" value={user.email ?? ''} disabled readOnly />

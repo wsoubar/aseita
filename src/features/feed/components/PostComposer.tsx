@@ -79,7 +79,7 @@ export function PostComposer() {
               id="post-character"
               value={characterId}
               onChange={(e) => setCharacterId(e.target.value)}
-              className="h-10 w-full rounded-lg border border-line bg-surface px-3 text-sm text-ink focus:border-accent focus:outline-none"
+              className="form-control"
             >
               <option value="">Nenhum</option>
               {characters.data?.map((c) => (
