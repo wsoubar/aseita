@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { ArrowUpRight, Monitor, Moon, Sun } from 'lucide-react'
 import { Button } from '../../../components/ui/button'
 import { Card } from '../../../components/ui/card'
-import { Field, Input } from '../../../components/ui/input'
+import { Field, Input, PasswordInput } from '../../../components/ui/input'
 import { useToast } from '../../../components/ui/toast-context'
 import { updateProfile } from '../../auth/api'
 import { useAuth } from '../../auth/context'
@@ -116,9 +116,8 @@ export function SettingsPage() {
           <Input id="account-email" value={user.email ?? ''} disabled readOnly />
         </Field>
         <Field label="Nova senha" htmlFor="new-password">
-          <Input
+          <PasswordInput
             id="new-password"
-            type="password"
             autoComplete="new-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}

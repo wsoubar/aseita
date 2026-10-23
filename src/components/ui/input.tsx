@@ -3,6 +3,8 @@ import type {
   ReactNode,
   TextareaHTMLAttributes,
 } from 'react'
+import { useState } from 'react'
+import { Eye, EyeOff } from 'lucide-react'
 import { cn } from '../../lib/utils'
 
 const fieldBase =
@@ -13,6 +15,28 @@ export function Input({
   ...props
 }: InputHTMLAttributes<HTMLInputElement>) {
   return <input className={cn(fieldBase, 'h-10', className)} {...props} />
+}
+
+export function PasswordInput({
+  className,
+  ...props
+}: InputHTMLAttributes<HTMLInputElement>) {
+  const [visible, setVisible] = useState(false)
+
+  return (
+    <div className="relative">
+      <Input className={cn('pr-11', className)} type={visible ? 'text' : 'password'} {...props} />
+      <button
+        type="button"
+        onClick={() => setVisible((current) => !current)}
+        aria-label={visible ? 'Ocultar senha' : 'Exibir senha'}
+        aria-pressed={visible}
+        className="absolute inset-y-0 right-0 flex w-10 items-center justify-center rounded-r-lg text-muted transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-accent"
+      >
+        {visible ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+      </button>
+    </div>
+  )
 }
 
 export function Textarea({

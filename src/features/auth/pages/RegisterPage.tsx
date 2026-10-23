@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '../../../components/ui/button'
-import { Field, Input } from '../../../components/ui/input'
+import { Field, Input, PasswordInput } from '../../../components/ui/input'
 import { useToast } from '../../../components/ui/toast-context'
 import { registerSchema } from '../../../lib/schemas'
 import type { LoginValues } from '../../../lib/schemas'
@@ -79,9 +79,8 @@ export function RegisterPage() {
           htmlFor="password"
           hint="Mínimo de 8 caracteres."
         >
-          <Input
+          <PasswordInput
             id="password"
-            type="password"
             autoComplete="new-password"
             {...register('password')}
           />

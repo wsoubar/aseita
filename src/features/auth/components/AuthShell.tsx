@@ -11,14 +11,17 @@ export function AuthShell({
   children: ReactNode
 }) {
   return (
-    <div className="flex min-h-dvh items-center justify-center px-4 py-10">
-      <div className="w-full max-w-sm space-y-6">
-        <div className="space-y-2 text-center">
-          <BookOpen className="mx-auto size-8 text-accent" />
-          <h1 className="font-display text-2xl font-bold">{title}</h1>
-          <p className="text-sm text-muted">{subtitle}</p>
+    <div className="relative isolate flex min-h-dvh items-center justify-center overflow-hidden bg-[radial-gradient(ellipse_at_50%_0%,color-mix(in_srgb,var(--color-accent)_17%,transparent),transparent_58%)] px-4 py-10">
+      <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-px bg-gradient-to-r from-transparent via-accent/60 to-transparent" />
+      <div className="w-full max-w-md space-y-7">
+        <div className="space-y-3 text-center">
+          <div className="mx-auto flex size-14 items-center justify-center rounded-2xl border border-accent/25 bg-accent/10 text-accent shadow-[0_0_36px_color-mix(in_srgb,var(--color-accent)_20%,transparent)]">
+            <BookOpen className="size-7" strokeWidth={1.7} />
+          </div>
+          <h1 className="font-display text-3xl font-semibold tracking-tight">{title}</h1>
+          <p className="mx-auto max-w-sm text-sm leading-relaxed text-muted">{subtitle}</p>
         </div>
-        <div className="rounded-[var(--radius-card)] border border-line bg-surface p-5">
+        <div className="rounded-[var(--radius-card)] border border-line bg-surface/95 p-6 shadow-2xl shadow-black/10 sm:p-7">
           {children}
         </div>
       </div>
