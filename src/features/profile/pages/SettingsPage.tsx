@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { ArrowUpRight, Monitor, Moon, Sun } from 'lucide-react'
 import { Button } from '../../../components/ui/button'
 import { Card } from '../../../components/ui/card'
+import { PageHeading } from '../../../components/ui/page-heading'
 import { Field, Input, PasswordInput } from '../../../components/ui/input'
 import { useToast } from '../../../components/ui/toast-context'
 import { updateProfile } from '../../auth/api'
@@ -56,19 +57,19 @@ export function SettingsPage() {
 
   return (
     <div className="space-y-7">
-      <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-end">
-        <div>
-          <h1 className="page-title">Configurações</h1>
-          <p className="page-description">Personalize seu perfil e sua experiência.</p>
-        </div>
-        <Link
-          to={`/u/${profile.username}`}
-          className="flex items-center gap-1 text-sm text-muted hover:text-accent"
-        >
-          Ver perfil público
-          <ArrowUpRight className="size-4" />
-        </Link>
-      </div>
+      <PageHeading
+        title="Configurações"
+        description="Personalize seu perfil e sua experiência."
+        action={
+          <Link
+            to={`/u/${profile.username}`}
+            className="flex items-center gap-1 text-sm text-muted hover:text-accent"
+          >
+            Ver perfil público
+            <ArrowUpRight className="size-4" />
+          </Link>
+        }
+      />
 
       <Card className="p-5 sm:p-7">
         <h2 className="mb-4 font-display text-lg font-semibold">Perfil</h2>

@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { MessageSquareText } from 'lucide-react'
+import { PageHeading } from '../../../components/ui/page-heading'
 import { EmptyState, ErrorState } from '../../../components/ui/empty-state'
 import { PostSkeleton } from '../../../components/ui/skeleton'
 import { Spinner } from '../../../components/ui/spinner'
@@ -29,13 +30,11 @@ export function FeedPage() {
 
   return (
     <div className="space-y-5">
-      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
-        <div>
-          <h1 className="page-title">Feed</h1>
-          <p className="page-description">Ideias, histórias e novidades da comunidade.</p>
-        </div>
-        <PostComposer />
-      </div>
+      <PageHeading
+        title="Feed"
+        description="Ideias, histórias e novidades da comunidade."
+        action={<PostComposer />}
+      />
 
       {feed.isLoading && (
         <div className="space-y-4">

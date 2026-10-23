@@ -6,6 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Plus, X } from 'lucide-react'
 import { Button } from '../../../components/ui/button'
 import { Card } from '../../../components/ui/card'
+import { PageHeading } from '../../../components/ui/page-heading'
 import { Field, Input, Textarea } from '../../../components/ui/input'
 import { EmptyState, ErrorState } from '../../../components/ui/empty-state'
 import { FullPageSpinner } from '../../../components/ui/spinner'
@@ -106,12 +107,10 @@ function CharacterForm({ character }: { character?: CharacterDetail }) {
 
   return (
     <div className="space-y-5">
-      <div>
-        <h1 className="page-title">
-          {isEdit ? 'Editar personagem' : 'Novo personagem'}
-        </h1>
-        <p className="page-description">Monte uma ficha para compartilhar com a comunidade.</p>
-      </div>
+      <PageHeading
+        title={isEdit ? 'Editar personagem' : 'Novo personagem'}
+        description="Monte uma ficha para compartilhar com a comunidade."
+      />
 
       <Card className="p-5 sm:p-7">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Trophy } from 'lucide-react'
 import { EmptyState, ErrorState } from '../../../components/ui/empty-state'
+import { PageHeading } from '../../../components/ui/page-heading'
 import { Skeleton } from '../../../components/ui/skeleton'
 import { useSystems } from '../../systems/api'
 import { useRanking } from '../api'
@@ -14,12 +15,11 @@ export function RankingPage() {
 
   return (
     <div className="space-y-5">
-      <div>
-        <h1 className="page-title flex items-center gap-2">
-          <Trophy className="size-5 text-accent" /> Ranking
-        </h1>
-        <p className="page-description">Os personagens mais queridos da comunidade.</p>
-      </div>
+      <PageHeading
+        title="Ranking"
+        description="Os personagens mais queridos da comunidade."
+        icon={<Trophy className="size-5 text-accent" />}
+      />
 
       <select
         value={systemId}

@@ -1,7 +1,7 @@
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft, Heart, Pencil, Trash2, Users } from 'lucide-react'
 import { Avatar } from '../../../components/ui/avatar'
-import { Button } from '../../../components/ui/button'
+import { Button, ButtonLink } from '../../../components/ui/button'
 import { EmptyState, ErrorState } from '../../../components/ui/empty-state'
 import { FullPageSpinner } from '../../../components/ui/spinner'
 import { useToast } from '../../../components/ui/toast-context'
@@ -109,15 +109,14 @@ export function CharacterDetailPage() {
 
           {isOwner && (
             <div className="flex gap-2 border-t border-line pt-4">
-              <Link to={`/characters/${c.id}/edit`}>
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  icon={<Pencil className="size-4" />}
-                >
-                  Editar
-                </Button>
-              </Link>
+              <ButtonLink
+                to={`/characters/${c.id}/edit`}
+                variant="secondary"
+                size="sm"
+                icon={<Pencil className="size-4" />}
+              >
+                Editar
+              </ButtonLink>
               <Button
                 variant="danger"
                 size="sm"

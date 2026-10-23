@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Plus, Search, Users } from 'lucide-react'
-import { Button } from '../../../components/ui/button'
+import { ButtonLink } from '../../../components/ui/button'
+import { PageHeading } from '../../../components/ui/page-heading'
 import { Input } from '../../../components/ui/input'
 import { EmptyState, ErrorState } from '../../../components/ui/empty-state'
 import { Skeleton } from '../../../components/ui/skeleton'
@@ -17,15 +18,15 @@ export function CharactersPage() {
 
   return (
     <div className="space-y-5">
-      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
-        <div>
-          <h1 className="page-title">Personagens</h1>
-          <p className="page-description">Explore fichas da comunidade ou crie a sua.</p>
-        </div>
-        <Link to="/characters/new">
-          <Button icon={<Plus className="size-4" />}>Novo</Button>
-        </Link>
-      </div>
+      <PageHeading
+        title="Personagens"
+        description="Explore fichas da comunidade ou crie a sua."
+        action={
+          <ButtonLink to="/characters/new" icon={<Plus className="size-4" />}>
+            Novo
+          </ButtonLink>
+        }
+      />
 
       <div className="flex flex-col gap-2 sm:flex-row">
         <div className="relative flex-1">
@@ -71,9 +72,9 @@ export function CharactersPage() {
           title="Nenhum personagem encontrado"
           description="Ajuste a busca ou crie uma nova ficha."
           action={
-            <Link to="/characters/new">
-              <Button icon={<Plus className="size-4" />}>Criar personagem</Button>
-            </Link>
+            <ButtonLink to="/characters/new" icon={<Plus className="size-4" />}>
+              Criar personagem
+            </ButtonLink>
           }
         />
       )}
