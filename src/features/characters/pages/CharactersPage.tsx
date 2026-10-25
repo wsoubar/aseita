@@ -91,7 +91,7 @@ export function CharactersPage() {
                 src={c.image_url}
                 alt={c.name}
                 loading="lazy"
-                className="h-36 w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+                className="h-36 w-full bg-surface-2 object-contain"
               />
             ) : (
               <div className="flex h-36 w-full items-center justify-center bg-surface-2 font-display text-sm font-medium tracking-wide text-muted">

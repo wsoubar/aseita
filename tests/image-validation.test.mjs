@@ -7,6 +7,7 @@ import test, { before } from 'node:test'
 const require = createRequire(import.meta.url)
 let validateImageFile
 let uploadImageWithAdapter
+let convertImageForUpload
 
 before(async () => {
   const ts = require('typescript')
@@ -23,6 +24,7 @@ before(async () => {
   }
   ;({ validateImageFile } = await importTypeScript('../src/lib/image-validation.ts'))
   ;({ uploadImageWithAdapter } = await importTypeScript('../src/lib/image-storage-core.ts'))
+  ;({ convertImageForUpload } = await importTypeScript('../src/lib/image-conversion.ts'))
 })
 
 function file(type, signature, size) {
@@ -42,6 +44,53 @@ async function withBitmap(t, dimensions, run) {
     else delete globalThis.createImageBitmap
   })
   await run()
+}
+
+async function withCanvas(t, { width, height, blobSize = 128 }, run) {
+  const previousBitmap = globalThis.createImageBitmap
+  const previousDocument = globalThis.document
+  const previousFile = globalThis.File
+  const state = { canvas: null, closed: false, qualities: [] }
+  globalThis.File = File
+  globalThis.createImageBitmap = async () => ({
+    width,
+    height,
+    close() {
+      state.closed = true
+    },
+  })
+  globalThis.document = {
+    createElement(tag) {
+      assert.equal(tag, 'canvas')
+      const canvas = {
+        width: 0,
+        height: 0,
+        getContext() {
+          return {
+            drawImage(_bitmap, _x, _y, drawWidth, drawHeight) {
+              state.drawnSize = [drawWidth, drawHeight]
+            },
+          }
+        },
+        toBlob(callback, type, quality) {
+          assert.equal(type, 'image/webp')
+          state.qualities.push(quality)
+          callback(new Blob([new Uint8Array(blobSize)], { type }))
+        },
+      }
+      state.canvas = canvas
+      return canvas
+    },
+  }
+  t.after(() => {
+    if (previousBitmap) globalThis.createImageBitmap = previousBitmap
+    else delete globalThis.createImageBitmap
+    if (previousDocument) globalThis.document = previousDocument
+    else delete globalThis.document
+    if (previousFile) globalThis.File = previousFile
+    else delete globalThis.File
+  })
+  await run(state)
 }
 
 const formats = [
@@ -161,4 +210,44 @@ test('does not return a public URL when storage rejects the upload', async () =>
     ),
     storageError,
   )
+})
+
+test('converts avatars to WebP with a 512 px maximum edge', async (t) => {
+  await withCanvas(t, { width: 1200, height: 600 }, async (state) => {
+    const result = await convertImageForUpload(
+      new File(['original'], 'portrait.png', { type: 'image/png' }),
+      'avatars',
+    )
+    assert.deepEqual(state.drawnSize, [512, 256])
+    assert.equal(result.name, 'portrait.webp')
+    assert.equal(result.type, 'image/webp')
+    assert.equal(result.size, 128)
+    assert.equal(state.closed, true)
+    assert.deepEqual(state.qualities, [0.82])
+  })
+})
+
+test('converts character art to WebP with a 1600 px maximum edge', async (t) => {
+  await withCanvas(t, { width: 3200, height: 1600 }, async (state) => {
+    await convertImageForUpload(
+      new File(['original'], 'character.jpeg', { type: 'image/jpeg' }),
+      'characters',
+    )
+    assert.deepEqual(state.drawnSize, [1600, 800])
+    assert.equal(state.closed, true)
+  })
+})
+
+test('retries lower WebP quality until the converted file fits the bucket limit', async (t) => {
+  await withCanvas(t, { width: 800, height: 800, blobSize: 3 * 1024 * 1024 }, async (state) => {
+    await assert.rejects(
+      convertImageForUpload(
+        new File(['original'], 'photo.png', { type: 'image/png' }),
+        'avatars',
+      ),
+      /ultrapassa 2 MB/,
+    )
+    assert.deepEqual(state.qualities, [0.82, 0.72, 0.62, 0.52])
+    assert.equal(state.closed, true)
+  })
 })

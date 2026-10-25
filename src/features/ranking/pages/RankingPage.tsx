@@ -73,7 +73,7 @@ export function RankingPage() {
                   src={row.image_url}
                   alt={row.name}
                   loading="lazy"
-                  className="size-10 shrink-0 rounded-md object-cover"
+                  className="size-10 shrink-0 rounded-md bg-surface-2 object-contain"
                 />
               ) : (
                 <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-surface-2 text-xs font-medium tracking-wide text-muted">

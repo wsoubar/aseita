@@ -62,7 +62,7 @@ export function CharacterDetailPage() {
           <img
             src={c.image_url}
             alt={c.name}
-            className="h-56 w-full object-cover sm:h-80"
+            className="max-h-[80dvh] w-full bg-surface-2 object-contain"
           />
         ) : (
           <div className="flex h-40 w-full items-center justify-center bg-surface-2 font-display text-2xl font-medium tracking-wide text-muted">

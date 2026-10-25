@@ -95,7 +95,7 @@ export function ProfilePage() {
                   src={c.image_url}
                   alt={c.name}
                   loading="lazy"
-                  className="h-32 w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+                  className="h-32 w-full bg-surface-2 object-contain"
                 />
               ) : (
                 <div className="flex h-32 w-full items-center justify-center bg-surface-2 text-sm font-medium tracking-wide text-muted">

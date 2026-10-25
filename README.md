@@ -32,7 +32,11 @@ utilitários; `src/types.ts` reúne os tipos de domínio.
 
 Avatares e imagens de personagens podem ser enviados ao bucket público do
 Supabase Storage. URLs externas já salvas continuam funcionando. Os uploads
-aceitam JPEG, PNG e WebP com até **2 MB** e **4 megapixels** por arquivo.
+aceitam JPEG, PNG e WebP com até **2 MB** e **4 megapixels** por arquivo. Antes
+do envio, o navegador converte avatares para WebP com até 512 px na maior
+dimensão e imagens de personagem para WebP com até 1600 px, preservando a
+proporção e ajustando a qualidade para manter o arquivo convertido abaixo de
+2 MB.
 
 ## Configuração
 

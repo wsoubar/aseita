@@ -67,7 +67,7 @@ export function ImageUploadField({
       label={label}
       htmlFor={`image-upload-${shape}`}
       error={error}
-      hint={`JPEG, PNG ou WebP · até ${IMAGE_MAX_BYTES / 1024 / 1024} MB · ${IMAGE_MAX_PIXELS / 1_000_000} MP`}
+      hint={`JPEG, PNG ou WebP · até ${IMAGE_MAX_BYTES / 1024 / 1024} MB · ${IMAGE_MAX_PIXELS / 1_000_000} MP. Avatares serão reduzidos a 512 px; personagens a 1600 px.`}
     >
       <div className="flex items-center gap-4 rounded-xl border border-line bg-surface-2/50 p-3">
         {imageSrc ? (
@@ -107,7 +107,13 @@ export function ImageUploadField({
               type="button"
               variant="ghost"
               size="sm"
-              icon={remove ? <ImagePlus className="size-4" /> : <X className="size-4" />}
+              icon={
+                remove ? (
+                  <ImagePlus className="size-4" />
+                ) : (
+                  <X className="size-4" />
+                )
+              }
               onClick={() => {
                 if (remove) {
                   onRemoveChange(false)

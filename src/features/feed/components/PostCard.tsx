@@ -64,7 +64,7 @@ export function PostCard({ post }: { post: FeedPost }) {
               src={post.character.image_url}
               alt={post.character.name}
               loading="lazy"
-              className="size-11 shrink-0 rounded-md object-cover"
+              className="size-11 shrink-0 rounded-md bg-surface object-contain"
             />
           ) : (
             <div className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-surface text-xs font-medium tracking-wide text-muted">

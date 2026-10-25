@@ -1,5 +1,6 @@
 import { supabase } from './supabase'
 import { uploadImageWithAdapter } from './image-storage-core'
+import { convertImageForUpload } from './image-conversion'
 
 export const IMAGE_BUCKET = 'aseita-images'
 export { IMAGE_ACCEPT, IMAGE_MAX_BYTES, IMAGE_MAX_PIXELS, validateImageFile } from './image-validation'
@@ -10,6 +11,7 @@ export async function uploadImage(
   file: File,
 ): Promise<string> {
   const bucket = supabase.storage.from(IMAGE_BUCKET)
+  const converted = await convertImageForUpload(file, kind)
   return uploadImageWithAdapter(
     {
       upload: async (path, image, contentType) => {
@@ -24,7 +26,7 @@ export async function uploadImage(
     },
     userId,
     kind,
-    file,
+    converted,
   )
 }
 
