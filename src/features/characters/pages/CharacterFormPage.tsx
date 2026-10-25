@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import type { ChangeEvent } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -8,6 +7,7 @@ import { Button } from '../../../components/ui/button'
 import { Card } from '../../../components/ui/card'
 import { PageHeading } from '../../../components/ui/page-heading'
 import { Field, Input, Textarea } from '../../../components/ui/input'
+import { ImageUploadField } from '../../../components/ui/image-upload-field'
 import { EmptyState, ErrorState } from '../../../components/ui/empty-state'
 import { FullPageSpinner } from '../../../components/ui/spinner'
 import { useToast } from '../../../components/ui/toast-context'
@@ -60,7 +60,10 @@ function CharacterForm({ character }: { character?: CharacterDetail }) {
   const { show } = useToast()
   const systems = useSystems()
   const createCharacter = useCreateCharacter(user?.id ?? '')
-  const updateCharacter = useUpdateCharacter(character?.id ?? '')
+  const updateCharacter = useUpdateCharacter(
+    character?.id ?? '',
+    user?.id ?? '',
+  )
 
   const [attributes, setAttributes] = useState<Attribute[]>(() =>
     Object.entries(character?.data ?? {}).map(([key, value]) => ({
@@ -68,7 +71,8 @@ function CharacterForm({ character }: { character?: CharacterDetail }) {
       value,
     })),
   )
-  const [preview, setPreview] = useState(character?.image_url ?? '')
+  const [imageFile, setImageFile] = useState<File | null>(null)
+  const [removeImage, setRemoveImage] = useState(false)
 
   const {
     register,
@@ -92,11 +96,19 @@ function CharacterForm({ character }: { character?: CharacterDetail }) {
     const data = attrsToRecord(attributes)
     try {
       if (character) {
-        await updateCharacter.mutateAsync({ values, data })
+        await updateCharacter.mutateAsync({
+          values,
+          data,
+          image: { file: imageFile, remove: removeImage },
+        })
         show('Personagem atualizado.', 'success')
         navigate(`/characters/${character.id}`)
       } else {
-        const created = await createCharacter.mutateAsync({ values, data })
+        const created = await createCharacter.mutateAsync({
+          values,
+          data,
+          image: { file: imageFile, remove: removeImage },
+        })
         show('Personagem criado!', 'success')
         navigate(`/characters/${created.id}`)
       }
@@ -114,13 +126,14 @@ function CharacterForm({ character }: { character?: CharacterDetail }) {
 
       <Card className="p-5 sm:p-7">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          {preview && (
-            <img
-              src={preview}
-              alt="Prévia"
-              className="h-48 w-full rounded-xl border border-line object-cover sm:h-64"
-            />
-          )}
+          <ImageUploadField
+            label="Imagem do personagem"
+            src={character?.image_url ?? null}
+            file={imageFile}
+            onFileChange={setImageFile}
+            remove={removeImage}
+            onRemoveChange={setRemoveImage}
+          />
 
           <Field
             label="Nome"
@@ -149,21 +162,7 @@ function CharacterForm({ character }: { character?: CharacterDetail }) {
             </select>
           </Field>
 
-          <Field
-            label="URL da imagem"
-            error={errors.image_url?.message}
-            htmlFor="image_url"
-            hint="Opcional. Apenas links externos (sem upload)."
-          >
-            <Input
-              id="image_url"
-              placeholder="https://..."
-              {...register('image_url', {
-                onChange: (e: ChangeEvent<HTMLInputElement>) =>
-                  setPreview(e.target.value),
-              })}
-            />
-          </Field>
+          <input type="hidden" {...register('image_url')} />
 
           <Field
             label="Descrição / história"

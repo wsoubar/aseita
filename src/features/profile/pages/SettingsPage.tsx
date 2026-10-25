@@ -6,7 +6,7 @@ import { Card } from '../../../components/ui/card'
 import { PageHeading } from '../../../components/ui/page-heading'
 import { Field, Input, PasswordInput } from '../../../components/ui/input'
 import { useToast } from '../../../components/ui/toast-context'
-import { updateProfile } from '../../auth/api'
+import { profileSaveErrorMessage, updateProfile } from '../../auth/api'
 import { useAuth } from '../../auth/context'
 import { ProfileForm } from '../../profile/components/ProfileForm'
 import { supabase } from '../../../lib/supabase'
@@ -30,13 +30,16 @@ export function SettingsPage() {
 
   if (!user || !profile) return null
 
-  async function handleSubmit(values: ProfileValues) {
+  async function handleSubmit(
+    values: ProfileValues,
+    image: { file: File | null; remove: boolean },
+  ) {
     try {
-      await updateProfile(user!.id, values)
+      await updateProfile(user!.id, values, false, image)
       refetchProfile()
       show('Perfil atualizado.', 'success')
-    } catch {
-      show('Não foi possível atualizar o perfil.', 'error')
+    } catch (error) {
+      show(profileSaveErrorMessage(error), 'error')
     }
   }
 

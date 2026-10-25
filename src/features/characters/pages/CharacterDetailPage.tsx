@@ -7,6 +7,7 @@ import { FullPageSpinner } from '../../../components/ui/spinner'
 import { useToast } from '../../../components/ui/toast-context'
 import { useAuth } from '../../auth/context'
 import { useCharacter, useDeleteCharacter } from '../api'
+import { removeUploadedImageBestEffort } from '../../../lib/image-storage'
 
 export function CharacterDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -37,6 +38,7 @@ export function CharacterDetailPage() {
     }
     try {
       await deleteCharacter.mutateAsync(c.id)
+      removeUploadedImageBestEffort(c.image_url)
       show('Personagem excluído.', 'success')
       navigate('/characters')
     } catch {

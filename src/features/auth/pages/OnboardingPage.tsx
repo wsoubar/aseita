@@ -1,6 +1,6 @@
 import { Navigate, useNavigate } from 'react-router-dom'
 import { useToast } from '../../../components/ui/toast-context'
-import { updateProfile } from '../../auth/api'
+import { profileSaveErrorMessage, updateProfile } from '../../auth/api'
 import { useAuth } from '../../auth/context'
 import { AuthShell } from '../../auth/components/AuthShell'
 import { ProfileForm } from '../../profile/components/ProfileForm'
@@ -14,14 +14,17 @@ export function OnboardingPage() {
   if (!user) return <Navigate to="/login" replace />
   if (!needsOnboarding) return <Navigate to="/" replace />
 
-  async function handleSubmit(values: ProfileValues) {
+  async function handleSubmit(
+    values: ProfileValues,
+    image: { file: File | null; remove: boolean },
+  ) {
     try {
-      await updateProfile(user!.id, values, true)
+      await updateProfile(user!.id, values, true, image)
       refetchProfile()
       show('Perfil pronto! Bem-vindo à Seita.', 'success')
       navigate('/')
-    } catch {
-      show('Não foi possível salvar. O nick pode estar em uso.', 'error')
+    } catch (error) {
+      show(profileSaveErrorMessage(error), 'error')
     }
   }
 

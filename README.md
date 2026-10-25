@@ -4,16 +4,35 @@ Rede social para jogadores de RPG: cadastre personagens de **diversos sistemas**
 publique no feed, curta e comente, visite perfis de outros jogadores e acompanhe
 o **ranking de popularidade** dos personagens.
 
+## Arquitetura
+
+A aplicação é uma SPA inicializada em `src/main.tsx`. `src/App.tsx` configura o
+cliente do TanStack Query, o roteador, os provedores de autenticação e notificações,
+e as rotas da aplicação. As páginas autenticadas ficam sob `ProtectedRoute` e
+compartilham `AppLayout`; login, cadastro e onboarding são rotas públicas.
+
+As funcionalidades ficam isoladas em `src/features/`: `auth`, `characters`,
+`feed`, `profile`, `ranking` e `systems`. Cada área reúne páginas e componentes
+próprios e, quando aplicável, um `api.ts` com consultas e mutações Supabase e hooks
+do TanStack Query. O estado remoto é cacheado pelo React Query; o feed usa
+paginação infinita e atualização otimista de curtidas.
+
+Componentes de layout e primitivos visuais compartilhados ficam em
+`src/components/`. `src/lib/` concentra o cliente Supabase, schemas Zod, tema e
+utilitários; `src/types.ts` reúne os tipos de domínio.
+
 ## Stack
 
-- **Vite + React 19 + TypeScript**
-- **Tailwind CSS v4** (tema escuro próprio, sem UI kit genérico)
-- **React Router** (SPA com rotas protegidas)
-- **TanStack Query** (cache/estado de servidor)
-- **React Hook Form + Zod** (formulários e validação)
-- **Supabase** (Auth + Postgres + Row Level Security)
+- **Vite + React 19 + TypeScript** (SPA)
+- **Tailwind CSS v4** para estilos
+- **React Router v7** para navegação
+- **TanStack Query v5** para cache e estado remoto
+- **React Hook Form + Zod** para formulários e validação
+- **Supabase** para autenticação e Postgres com Row Level Security (RLS)
 
-Não há upload de imagens: personagens e avatares usam apenas **URLs externas**.
+Avatares e imagens de personagens podem ser enviados ao bucket público do
+Supabase Storage. URLs externas já salvas continuam funcionando. Os uploads
+aceitam JPEG, PNG e WebP com até **2 MB** e **4 megapixels** por arquivo.
 
 ## Configuração
 
@@ -30,7 +49,6 @@ npm install
    [`supabase/migrations/0001_init.sql`](./supabase/migrations/0001_init.sql).
    Esse script cria tabelas, índices, triggers, policies de RLS, a view de
    ranking e faz o seed dos sistemas.
-   _Alternativa com a CLI:_ `supabase link` e depois `supabase db push`.
 3. Em **Authentication > Providers**, habilite **Email** (e **Google**, se quiser
    login social). Em **Authentication > URL Configuration**, adicione a URL do
    app (ex.: `http://localhost:5173`) em *Redirect URLs*.
@@ -43,78 +61,86 @@ Copie o exemplo e preencha com os dados de **Project Settings > API**:
 cp .env.example .env
 ```
 
-```
+```dotenv
 VITE_SUPABASE_URL=https://SEU-PROJETO.supabase.co
 VITE_SUPABASE_ANON_KEY=sua-anon-key-publica
 ```
 
-> Use apenas a **anon key** (pública). Nunca coloque a `service_role` no cliente.
+O cliente é criado em `src/lib/supabase.ts` usando essas variáveis. Sem elas, a
+interface mostra um aviso de configuração. A migração cria o bucket público
+`aseita-images`, com limite de 2 MB e allowlist JPEG/PNG/WebP; políticas RLS
+restringem envio e exclusão ao diretório do usuário autenticado. A interface
+também valida o tipo real do arquivo e o limite de 4 MP. Use apenas a **anon
+key** pública; nunca coloque a `service_role` no cliente.
 
-## Comandos
+## Organização do código
 
-```sh
-npm run dev       # servidor de desenvolvimento (HMR)
-npm run build     # tsc -b && vite build
-npm run lint      # eslint
-npm run preview   # serve o build de produção
-```
-
-Não há testes automatizados neste projeto.
-
-## Estrutura
-
-```
+```text
 src/
+  App.tsx                 provedores e rotas da SPA
+  main.tsx                ponto de entrada React
   components/
-    layout/        AppLayout (nav) e ProtectedRoute
-    ui/            primitivos (Button, Input, Card, Dialog, Toast, ...)
+    layout/               navegação e proteção de rotas
+    ui/                   componentes visuais compartilhados
   features/
-    auth/          AuthProvider, login/registro/onboarding
-    feed/          posts, likes, comentários
-    characters/    fichas (CRUD) e atributos dinâmicos
-    profile/       perfil público e configurações
-    ranking/       ranking de popularidade
-    systems/       catálogo de sistemas
-  lib/             supabase client, schemas (zod), utils
-  types.ts         tipos de domínio
-supabase/migrations/  schema SQL
+    auth/                 sessão, login, registro e onboarding
+    characters/           fichas e atributos dinâmicos
+    feed/                 publicações, curtidas e comentários
+    profile/              perfil público e configurações
+    ranking/              ranking de popularidade
+    systems/              catálogo de sistemas de RPG
+  lib/                    Supabase, schemas, tema e utilitários
+  types.ts                tipos de domínio
+supabase/migrations/      schema, políticas e dados iniciais
+.github/workflows/        CI e deploy no GitHub Pages
 ```
 
 ## Fluxo do usuário
 
 Cadastro → **onboarding** (escolher nick e sistema preferido) → criar
 personagem → publicar no feed (opcionalmente vinculando um personagem) →
-curtir/comentar → ver o perfil de quem postou (clicando no nick) → ranking.
+curtir/comentar → visitar o perfil de quem postou → ranking.
 
-## Modelo de dados
+## Modelo de dados e acesso
 
-`systems`, `profiles`, `characters` (com `data jsonb` para atributos livres por
-sistema), `posts`, `likes`, `comments` e a view `character_rankings`
-(score = curtidas + comentários em posts vinculados ao personagem).
-Todas as tabelas têm **RLS**: leitura pública e escrita restrita ao dono.
+A migração inicial define `systems`, `profiles`, `characters`, `posts`, `likes` e
+`comments`, além da view `character_rankings`. Os dados livres de cada personagem
+ficam em `characters.data` (`jsonb`). Triggers mantêm timestamps e contagem de
+curtidas; o score do ranking combina curtidas do personagem e comentários em
+publicações vinculadas a ele.
+
+As tabelas usam RLS: leitura pública e escrita limitada conforme a identidade do
+usuário e as policies definidas na migração. O frontend acessa o Supabase com a
+anon key pública; a autorização efetiva é aplicada no banco pelas policies.
+
+## Comandos
+
+```sh
+npm run dev       # servidor de desenvolvimento com HMR
+npm run build     # checagem TypeScript e build de produção em dist/
+npm run lint      # ESLint
+npm test          # testes automatizados (node:test)
+npm run preview   # serve o build de produção localmente
+```
+
+O workflow de CI executa `npm run lint`, `npm test` e `npm run build` em pushes e
+pull requests.
 
 ## Deploy (GitHub Pages)
 
-O deploy é automático via GitHub Actions em todo push para `main`
-([`.github/workflows/deploy.yml`](./.github/workflows/deploy.yml)). O workflow
-([`.github/workflows/ci.yml`](./.github/workflows/ci.yml)) roda `lint` + `build`
-em pushes e pull requests.
+O workflow [`.github/workflows/deploy.yml`](./.github/workflows/deploy.yml)
+publica o conteúdo de `dist/` no GitHub Pages em pushes para `main`. Ele define o
+`base` do Vite pelo caminho publicado e injeta `VITE_SUPABASE_URL` e
+`VITE_SUPABASE_ANON_KEY` a partir dos secrets do repositório. Para suportar rotas
+da SPA, o workflow copia `index.html` para `404.html`.
 
-Configuração inicial, uma vez:
+Configuração inicial:
 
-1. **Secrets** — em *Settings > Secrets and variables > Actions*, crie:
-   - `VITE_SUPABASE_URL`
-   - `VITE_SUPABASE_ANON_KEY`
-2. **Pages** — em *Settings > Pages*, defina **Source: GitHub Actions**.
-3. **Supabase** — adicione a URL publicada (ex.:
-   `https://<usuario>.github.io/<repo>/`) em *Authentication > URL Configuration
-   > Redirect URLs*.
+1. Em *Settings > Secrets and variables > Actions*, crie os secrets
+   `VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY`.
+2. Em *Settings > Pages*, defina **Source: GitHub Actions**.
+3. Adicione a URL publicada em **Supabase > Authentication > URL Configuration
+   > Redirect URLs**.
 
-O `base` do Vite é ajustado automaticamente pelo workflow
-(`configure-pages` → `VITE_BASE`), então funciona tanto em repositório comum
-quanto em página de usuário/domínio customizado. Rotas do SPA são suportadas
-copiando `index.html` para `404.html`.
-
-> Para outros hosts (Vercel, Netlify), o build é o mesmo (`npm run build`,
-> saída em `dist/`); basta configurar as variáveis de ambiente no painel do host.
-
+Para outros hosts, execute `npm run build` e publique `dist/`, configurando as
+mesmas variáveis de ambiente no painel do host.

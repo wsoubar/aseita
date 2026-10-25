@@ -6,6 +6,10 @@ import type {
   CharacterWithSystem,
   ProfileRef,
 } from '../../types'
+import {
+  removeUploadedImageBestEffort,
+  uploadImage,
+} from '../../lib/image-storage'
 
 export interface CharacterDetail extends CharacterWithSystem {
   owner: ProfileRef
@@ -72,12 +76,16 @@ export function useCharacter(id?: string) {
   })
 }
 
-function toRow(values: CharacterValues, data: Record<string, string>) {
+function toRow(
+  values: CharacterValues,
+  data: Record<string, string>,
+  imageUrl = values.image_url || null,
+) {
   return {
     name: values.name,
     system_id: values.system_id,
     description: values.description || null,
-    image_url: values.image_url || null,
+    image_url: imageUrl,
     data,
   }
 }
@@ -88,13 +96,26 @@ export function useCreateCharacter(ownerId: string) {
     mutationFn: async (input: {
       values: CharacterValues
       data: Record<string, string>
+      image: { file: File | null; remove: boolean }
     }): Promise<Character> => {
+      let imageUrl = input.values.image_url || null
+      if (input.image.file) {
+        imageUrl = await uploadImage(ownerId, 'characters', input.image.file)
+      } else if (input.image.remove) {
+        imageUrl = null
+      }
       const { data, error } = await supabase
         .from('characters')
-        .insert({ ...toRow(input.values, input.data), owner_id: ownerId })
+        .insert({
+          ...toRow(input.values, input.data, imageUrl),
+          owner_id: ownerId,
+        })
         .select('*')
         .single()
-      if (error) throw error
+      if (error) {
+        if (input.image.file) removeUploadedImageBestEffort(imageUrl)
+        throw error
+      }
       return data as Character
     },
     onSuccess: () => {
@@ -103,18 +124,38 @@ export function useCreateCharacter(ownerId: string) {
   })
 }
 
-export function useUpdateCharacter(id: string) {
+export function useUpdateCharacter(id: string, ownerId: string) {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (input: {
       values: CharacterValues
       data: Record<string, string>
+      image: { file: File | null; remove: boolean }
     }) => {
+      const previous = await supabase
+        .from('characters')
+        .select('image_url')
+        .eq('id', id)
+        .single()
+      if (previous.error) throw previous.error
+
+      let imageUrl = input.values.image_url || null
+      if (input.image.file) {
+        imageUrl = await uploadImage(ownerId, 'characters', input.image.file)
+      } else if (input.image.remove) {
+        imageUrl = null
+      }
       const { error } = await supabase
         .from('characters')
-        .update(toRow(input.values, input.data))
+        .update(toRow(input.values, input.data, imageUrl))
         .eq('id', id)
-      if (error) throw error
+      if (error) {
+        if (input.image.file) removeUploadedImageBestEffort(imageUrl)
+        throw error
+      }
+      if (input.image.file || input.image.remove) {
+        removeUploadedImageBestEffort(previous.data.image_url)
+      }
     },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['characters'] })

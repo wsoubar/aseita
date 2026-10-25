@@ -1,8 +1,9 @@
-import { useForm, useWatch } from 'react-hook-form'
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '../../../components/ui/button'
 import { Field, Input, Textarea } from '../../../components/ui/input'
-import { Avatar } from '../../../components/ui/avatar'
+import { ImageUploadField } from '../../../components/ui/image-upload-field'
 import { profileSchema } from '../../../lib/schemas'
 import type { ProfileValues } from '../../../lib/schemas'
 import { useSystems } from '../../systems/api'
@@ -19,13 +20,17 @@ export function ProfileForm({
   defaultValues: ProfileValues
   submitLabel: string
   lockUsername?: boolean
-  onSubmit: (values: ProfileValues) => Promise<void>
+  onSubmit: (
+    values: ProfileValues,
+    image: { file: File | null; remove: boolean },
+  ) => Promise<void>
 }) {
   const systems = useSystems()
+  const [imageFile, setImageFile] = useState<File | null>(null)
+  const [removeImage, setRemoveImage] = useState(false)
   const {
     register,
     handleSubmit,
-    control,
     setError,
     formState: { errors, isSubmitting },
   } = useForm<ProfileValues>({
@@ -33,26 +38,37 @@ export function ProfileForm({
     defaultValues,
   })
 
-  const avatarUrl = useWatch({ control, name: 'avatar_url' })
-  const displayName = useWatch({ control, name: 'display_name' })
-
   async function submit(values: ProfileValues) {
-    const available = await isUsernameAvailable(values.username, userId)
-    if (!available) {
-      setError('username', { message: 'Este nick já está em uso' })
-      return
+    try {
+      const available = await isUsernameAvailable(values.username, userId)
+      if (!available) {
+        setError('username', { message: 'Este nick já está em uso' })
+        return
+      }
+      await onSubmit(values, { file: imageFile, remove: removeImage })
+    } catch {
+      setError('root.server', {
+        message: 'Não foi possível validar ou salvar o perfil. Tente novamente.',
+      })
     }
-    await onSubmit(values)
   }
 
   return (
     <form onSubmit={handleSubmit(submit)} className="space-y-4">
-      <div className="flex items-center gap-4 rounded-xl border border-line bg-surface-2/50 p-3">
-        <Avatar src={avatarUrl || null} name={displayName || '?'} size={56} />
-        <p className="text-xs text-muted">
-          Avatar via URL externa — cole um link de imagem abaixo.
+      {errors.root?.server?.message && (
+        <p role="alert" className="text-sm text-danger">
+          {errors.root.server.message}
         </p>
-      </div>
+      )}
+      <ImageUploadField
+        label="Imagem do perfil"
+        src={defaultValues.avatar_url || null}
+        shape="avatar"
+        file={imageFile}
+        onFileChange={setImageFile}
+        remove={removeImage}
+        onRemoveChange={setRemoveImage}
+      />
 
       <Field
         label="Nick (@)"
@@ -71,18 +87,7 @@ export function ProfileForm({
         <Input id="display_name" {...register('display_name')} />
       </Field>
 
-      <Field
-        label="URL do avatar"
-        error={errors.avatar_url?.message}
-        htmlFor="avatar_url"
-        hint="Opcional. Ex.: https://exemplo.com/foto.jpg"
-      >
-        <Input
-          id="avatar_url"
-          placeholder="https://..."
-          {...register('avatar_url')}
-        />
-      </Field>
+      <input type="hidden" {...register('avatar_url')} />
 
       <Field
         label="Sistema preferido"

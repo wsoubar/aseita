@@ -2,61 +2,31 @@
 
 ## Comunicação
 
-- Respostas concisas e diretas. Sem preâmbulo, sem recapitular o que o usuário disse, sem fechamento do tipo "espero ter ajudado".
-- Só detalhar ou explicar se o usuário pedir.
-- Ao concluir uma tarefa: 1-3 linhas dizendo o que mudou e o que ficou pendente.
-- Não repetir código inalterado. Mostrar apenas o diff ou o trecho relevante.
-- Responder no idioma do usuário (pt-BR).
+- Respostas concisas e diretas, em pt-BR.
+- Ao concluir uma tarefa, informe em 1-3 linhas o que mudou e o que ficou pendente.
+- Não repetir código inalterado; mostrar apenas diff ou trecho relevante quando necessário.
 
-## Eficiência de tokens
+## Eficiência
 
-- Ler só o necessário: usar grep/glob para localizar e ler faixas de linhas, não arquivos inteiros.
-- Não reler arquivos já lidos na sessão, a menos que tenham mudado.
-- Não listar diretórios grandes (node_modules, target, build, dist, .git).
-- Saídas longas de comandos: filtrar com `head`, `tail`, `grep`.
-- Preferir editar o trecho a reescrever o arquivo.
-- Não criar arquivos de documentação, testes ou exemplos que não foram pedidos.
+- Ler só o necessário; localizar arquivos com `rg`/`rg --files` e evitar diretórios gerados.
+- Não criar documentação, testes ou exemplos que não foram pedidos.
+- Não ler ou expor `.env`, chaves e credenciais.
 
 ## Fluxo de trabalho
 
-1. Tarefas pequenas e claras: executar direto.
-2. Tarefas médias ou grandes: entrar em plan mode antes de editar.
-3. Após editar: rodar build/testes/lint e corrigir antes de dar a tarefa como concluída.
-4. Em caso de ambiguidade real, fazer UMA pergunta objetiva. Caso contrário, assumir o padrão mais razoável e informar a suposição.
+- Tarefas pequenas e claras: executar direto. Tarefas médias ou grandes: planejar antes de editar.
+- Após editar código, rodar build, testes e lint aplicáveis; não há script de testes automatizados neste projeto.
+- Em caso de ambiguidade real, fazer uma pergunta objetiva; caso contrário, assumir o padrão razoável e informar a suposição.
 
-## Plan mode (boas práticas)
+## Projeto
 
-- Plan mode é somente leitura: explorar, analisar e propor, sem alterar nada.
-- Plano curto: objetivo, arquivos afetados, passos numerados, riscos, como verificar.
-- Não gastar o plano com o que é óbvio. Listar só decisões e trade-offs.
-- Apresentar alternativas apenas se houver trade-off real, com recomendação.
-- Esperar aprovação antes de executar.
-- Para planos longos, salvar em `PLAN.md` e executar passo a passo, marcando o que foi feito. Isso permite limpar o contexto e retomar.
-- Cada passo do plano deve ser verificável (teste, comando ou resultado esperado).
-
-## Gestão de contexto
-
-- Uma tarefa por sessão. Ao mudar de assunto, limpar o contexto (`/clear` ou `/new`).
-- Ao se aproximar de ~50% da janela, compactar (`/compact` ou `/compact <foco>`) ou salvar o estado em arquivo e reiniciar.
-- Delegar pesquisas e explorações amplas a subagentes: só o resumo volta ao contexto principal.
-- Referenciar arquivos específicos (`@arquivo`) em vez de pedir "olhe o projeto".
-- Fixar convenções do projeto aqui, não repetir em cada prompt.
-- Manter este arquivo curto (idealmente < 100 linhas). Conhecimento específico vai em docs separados, lidos sob demanda.
-- Desativar MCPs e ferramentas que não estão em uso, pois as definições deles ocupam contexto.
-- Logs e stack traces: colar só o trecho relevante.
-- Ao retomar trabalho, gravar o estado em `NOTES.md` (feito / pendente / decisões) e ler só esse arquivo.
-
-## Projeto (preencher)
-
-- Stack: <ex.: Java 25, Spring Boot, Maven>
-- Build: `<comando>`
-- Testes: `<comando>`
-- Lint/format: `<comando>`
-- Estrutura: <pastas principais em uma linha cada>
-- Convenções: <nomes, padrões, o que evitar>
+- Stack: Vite, React 19, TypeScript, Tailwind CSS v4, React Router v7, TanStack Query v5, React Hook Form, Zod e Supabase.
+- Build: `npm run build` (`tsc -b && vite build`).
+- Lint: `npm run lint` (ESLint). Testes: `npm test` (runner nativo `node:test`).
+- Estrutura: `src/features/*` organiza auth, characters, feed, profile, ranking e systems; `src/components/layout` contém layout/rotas protegidas; `src/components/ui` contém componentes compartilhados; `src/lib` contém Supabase, schemas, tema e utilitários; `supabase/migrations` contém o schema SQL.
+- Convenções: manter lógica de acesso a dados junto à feature em `api.ts`; usar tipos de domínio de `src/types.ts`, validação Zod em `src/lib/schemas.ts` e TanStack Query para estado remoto.
 
 ## Limites
 
 - Nunca commitar, fazer push ou apagar arquivos sem pedido explícito.
-- Nunca ler ou expor `.env`, chaves e credenciais.
 - Antes de comandos destrutivos ou de instalar dependências, confirmar.
