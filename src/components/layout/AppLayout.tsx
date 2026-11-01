@@ -1,4 +1,7 @@
+import { useState } from 'react'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
+import { ConfirmDialog } from '../ui/confirm-dialog'
+import { useToast } from '../ui/toast-context'
 import {
   BookOpen,
   Home,
@@ -36,6 +39,9 @@ export function AppLayout() {
   const { profile } = useAuth()
   const navigate = useNavigate()
   const { pref, setPref } = useTheme()
+  const { show } = useToast()
+  const [confirmLogout, setConfirmLogout] = useState(false)
+  const [loggingOut, setLoggingOut] = useState(false)
 
   const ThemeIcon = themeIcons[pref]
 
@@ -45,12 +51,31 @@ export function AppLayout() {
   }
 
   async function handleLogout() {
-    await auth.signOut()
-    navigate('/login')
+    setLoggingOut(true)
+    try {
+      const { error } = await auth.signOut()
+      if (error) throw error
+      setConfirmLogout(false)
+      navigate('/login')
+    } catch {
+      show('Não foi possível sair. Tente novamente.', 'error')
+    } finally {
+      setLoggingOut(false)
+    }
   }
 
   return (
     <div className="min-h-dvh pb-[calc(5rem+env(safe-area-inset-bottom))] sm:pb-0">
+      <ConfirmDialog
+        open={confirmLogout}
+        title="Sair da conta?"
+        description="Você precisará entrar novamente para acessar sua conta."
+        confirmLabel="Sair"
+        intent="logout"
+        loading={loggingOut}
+        onCancel={() => setConfirmLogout(false)}
+        onConfirm={handleLogout}
+      />
       <header className="sticky top-0 z-40 border-b border-line/80 bg-canvas/90 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-5xl items-center justify-between gap-4 px-4 sm:px-6">
           <NavLink to="/" className="flex shrink-0 items-center gap-2.5 rounded-lg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent">
@@ -113,7 +138,7 @@ export function AppLayout() {
             </NavLink>
             <button
               type="button"
-              onClick={handleLogout}
+              onClick={() => setConfirmLogout(true)}
               className="flex size-10 items-center justify-center rounded-xl text-muted transition-colors hover:bg-surface-2 hover:text-ink focus-visible:outline-2 focus-visible:outline-accent"
               title="Sair"
             >
