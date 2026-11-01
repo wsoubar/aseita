@@ -1,3 +1,5 @@
+import { useState } from 'react'
+import { ConfirmDialog } from '../../../components/ui/confirm-dialog'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft, Heart, Pencil, Trash2, Users } from 'lucide-react'
 import { Avatar } from '../../../components/ui/avatar'
@@ -16,6 +18,7 @@ export function CharacterDetailPage() {
   const { show } = useToast()
   const character = useCharacter(id)
   const deleteCharacter = useDeleteCharacter()
+  const [confirmDelete, setConfirmDelete] = useState(false)
 
   if (character.isLoading) return <FullPageSpinner />
   if (character.isError)
@@ -33,9 +36,6 @@ export function CharacterDetailPage() {
   const attributes = Object.entries(c.data ?? {})
 
   async function handleDelete() {
-    if (!window.confirm('Excluir este personagem? Essa ação é permanente.')) {
-      return
-    }
     try {
       await deleteCharacter.mutateAsync(c.id)
       removeUploadedImageBestEffort(c.image_url)
@@ -48,6 +48,14 @@ export function CharacterDetailPage() {
 
   return (
     <div className="space-y-5">
+      <ConfirmDialog
+        open={confirmDelete}
+        title="Excluir personagem?"
+        description={`O personagem ${c.name} será removido permanentemente. Essa ação não pode ser desfeita.`}
+        loading={deleteCharacter.isPending}
+        onCancel={() => setConfirmDelete(false)}
+        onConfirm={handleDelete}
+      />
       <button
         type="button"
         onClick={() => navigate(-1)}
@@ -123,7 +131,7 @@ export function CharacterDetailPage() {
                 variant="danger"
                 size="sm"
                 icon={<Trash2 className="size-4" />}
-                onClick={handleDelete}
+                onClick={() => setConfirmDelete(true)}
                 loading={deleteCharacter.isPending}
               >
                 Excluir

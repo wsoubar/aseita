@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Heart, MessageCircle, Trash2 } from 'lucide-react'
+import { ConfirmDialog } from '../../../components/ui/confirm-dialog'
 import { Avatar } from '../../../components/ui/avatar'
 import { useAuth } from '../../auth/context'
 import { useDeletePost, useToggleLike } from '../api'
@@ -11,6 +12,7 @@ import { CommentsSection } from './CommentsSection'
 export function PostCard({ post, compact = false }: { post: FeedPost; compact?: boolean }) {
   const { user } = useAuth()
   const [showComments, setShowComments] = useState(false)
+  const [confirmDelete, setConfirmDelete] = useState(false)
   const toggleLike = useToggleLike(user?.id ?? '')
   const deletePost = useDeletePost(user?.id ?? '')
   const isOwner = user?.id === post.author.id
@@ -48,11 +50,7 @@ export function PostCard({ post, compact = false }: { post: FeedPost; compact?: 
           <button
             type="button"
             title="Excluir post"
-            onClick={() => {
-              if (window.confirm('Excluir este post?')) {
-                deletePost.mutate(post.id)
-              }
-            }}
+            onClick={() => setConfirmDelete(true)}
             className="rounded-lg p-1.5 text-muted hover:bg-surface-2 hover:text-danger"
           >
             <Trash2 className="size-4" />
@@ -157,6 +155,14 @@ export function PostCard({ post, compact = false }: { post: FeedPost; compact?: 
       </footer>
 
       {showComments && <CommentsSection postId={post.id} />}
+      <ConfirmDialog
+        open={confirmDelete}
+        title="Excluir post?"
+        description="Este post será removido permanentemente. Essa ação não pode ser desfeita."
+        loading={deletePost.isPending}
+        onCancel={() => setConfirmDelete(false)}
+        onConfirm={() => deletePost.mutate(post.id, { onSuccess: () => setConfirmDelete(false) })}
+      />
     </article>
   )
 }
