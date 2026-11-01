@@ -119,9 +119,9 @@ export function ProfilePage() {
             description={isMe ? 'Compartilhe algo no feed.' : undefined}
           />
         )}
-        <div className="space-y-4">
+        <div className="divide-y divide-line rounded-[var(--radius-card)] border border-line bg-surface empty:hidden">
           {posts.data?.map((post) => (
-            <PostCard key={post.id} post={post} />
+            <PostCard key={post.id} post={post} compact />
           ))}
         </div>
       </section>

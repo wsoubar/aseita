@@ -8,7 +8,7 @@ import type { FeedPost } from '../../../types'
 import { cn, timeAgo } from '../../../lib/utils'
 import { CommentsSection } from './CommentsSection'
 
-export function PostCard({ post }: { post: FeedPost }) {
+export function PostCard({ post, compact = false }: { post: FeedPost; compact?: boolean }) {
   const { user } = useAuth()
   const [showComments, setShowComments] = useState(false)
   const toggleLike = useToggleLike(user?.id ?? '')
@@ -16,8 +16,15 @@ export function PostCard({ post }: { post: FeedPost }) {
   const isOwner = user?.id === post.author.id
 
   return (
-    <article className="rounded-[var(--radius-card)] border border-line bg-surface px-4 py-3 shadow-sm shadow-black/[0.04] sm:px-6">
+    <article className={cn(
+      compact
+        ? 'px-3 py-3 sm:px-4'
+        : 'rounded-[var(--radius-card)] border border-line bg-surface px-4 py-3 shadow-sm shadow-black/[0.04] sm:px-6',
+    )}>
       <header className="flex items-center justify-between gap-3">
+        {compact ? (
+          <p className="text-xs text-muted">{timeAgo(post.created_at)}</p>
+        ) : (
         <Link
           to={`/u/${post.author.username}`}
           className="flex min-w-0 items-center gap-3 rounded-lg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
@@ -36,6 +43,7 @@ export function PostCard({ post }: { post: FeedPost }) {
             </p>
           </div>
         </Link>
+        )}
         {isOwner && (
           <button
             type="button"
@@ -52,7 +60,23 @@ export function PostCard({ post }: { post: FeedPost }) {
         )}
       </header>
 
-      {post.character ? (
+      {compact ? (
+        <div className="mt-1 min-w-0">
+          <p className="whitespace-pre-wrap break-words text-sm leading-relaxed text-ink">
+            {post.character ? `“${post.body}”` : post.body}
+          </p>
+          {post.character && (
+            <p className="mt-1 break-words text-xs text-muted">
+              <Link to={`/characters/${post.character.id}`} className="rounded-sm font-medium hover:text-accent">
+                {post.character.name}
+              </Link>
+              {post.character.system?.name && (
+                <span className="ml-1 italic">({post.character.system.name})</span>
+              )}
+            </p>
+          )}
+        </div>
+      ) : post.character ? (
         <div className="mt-2 flex items-start gap-4 sm:gap-6">
           <Link
             to={`/characters/${post.character.id}`}
@@ -116,7 +140,7 @@ export function PostCard({ post }: { post: FeedPost }) {
           title={post.liked ? 'Remover curtida' : 'Curtir'}
         >
           <Heart
-            className={cn('size-5', post.liked && 'fill-current')}
+            className={cn(compact ? 'size-4' : 'size-5', post.liked && 'fill-current')}
           />
           {post.likeCount}
         </button>
@@ -127,7 +151,7 @@ export function PostCard({ post }: { post: FeedPost }) {
           onClick={() => setShowComments((v) => !v)}
           className="flex min-h-8 items-center gap-1.5 rounded-lg px-2 text-sm text-muted hover:bg-surface-2 hover:text-ink"
         >
-          <MessageCircle className="size-5" />
+          <MessageCircle className={compact ? 'size-4' : 'size-5'} />
           {post.commentCount}
         </button>
       </footer>
